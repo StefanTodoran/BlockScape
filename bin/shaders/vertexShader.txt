@@ -1,0 +1,17 @@
+#version 400 core
+
+in vec3 position;
+in vec2 texture;
+
+out vec2 textureCoords;
+
+uniform mat4 transformMatrix;
+uniform mat4 projectMatrix;
+uniform mat4 viewMatrix;
+uniform vec3 lightPosition;
+
+void main(void) {
+	
+	gl_Position = projectMatrix * viewMatrix * transformMatrix * vec4(position, 1.0);
+	textureCoords = texture;
+}

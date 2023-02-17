@@ -1,0 +1,16 @@
+#version 400 core
+
+in vec2 textureCoords;
+
+out vec4 outColor;
+
+uniform sampler2D textureSampler;
+uniform vec3 lightColor;
+
+void main(void) {
+	
+	// somehow get size 16 from texture size
+	vec2 pixelCoords = floor(textureCoords * 32) / 32;
+	// vec2 pixelCoords = textureCoords;
+	outColor = texture(textureSampler, pixelCoords);
+}
