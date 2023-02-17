@@ -3,24 +3,32 @@
 in vec2 textureCoords;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
+in vec3 toCameraVector;
 
 out vec4 outColor;
 
 uniform sampler2D textureSampler;
 uniform vec3 lightColor;
+uniform float shineDamper;
+uniform float reflectivity;
 
 void main(void) {
 	
 	vec3 unitNormal = normalize(surfaceNormal);
 	vec3 unitLight = normalize(toLightVector);
 	
-	float res = dot(unitNormal, unitLight);
-	float brightness = max(res, 0.1);
-	// vec3 diffuse = brightness * lightColor;
-	vec3 diffuse = vec3(brightness);
+	float light = dot(unitNormal, unitLight);
+	float brightness = max(light, 0.1);
+	vec3 diffuse = brightness * lightColor;
+	
+	vec3 unitCamera = normalize(toCameraVector);
+	vec3 reflectedLight = reflect(-unitLight, unitNormal);
+	float specFactor = dot(reflectedLight, unitCamera);
+	specFactor = max(specFactor, 0.0);
+	float dampedFactor = pow(specFactor, shineDamper);
+	vec3 specular = dampedFactor * reflectivity * lightColor;
 	
 	// somehow get size 32 from texture size?
 	vec2 pixelCoords = floor(textureCoords * 32) / 32;
-	// vec2 pixelCoords = textureCoords;
-	outColor = vec4(diffuse, 1) * texture(textureSampler, pixelCoords);
+	outColor = vec4(diffuse, 1) * texture(textureSampler, pixelCoords) + vec4(specular, 1.0);
 }

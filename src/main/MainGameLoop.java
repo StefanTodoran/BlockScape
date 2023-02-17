@@ -24,8 +24,13 @@ public class MainGameLoop {
 		Renderer renderer = new Renderer(shader);
 		
 		List<Block> blocks = new ArrayList<Block>();
-		blocks.add(new Block(loader, "grass_block", new Vector3f(-1, 0, -5), 0, 0, 0, 1));
-		blocks.add(new Block(loader, "clay_block", new Vector3f(1, 0, -5), 0, 0, 0, 1));
+		blocks.add(new Block(loader, "grass_block", new Vector3f(-2, 0, -5), 0, 0, 0, 1));
+		blocks.add(new Block(loader, "clay_block", new Vector3f(0, 0, -5), 0, 0, 0, 1));
+		
+		Block gold = new Block(loader, "gold_block", new Vector3f(2, 0, -5), 0, 0, 0, 1);
+		gold.getEntity().getModel().getTexture().setShineDamper(5);
+		gold.getEntity().getModel().getTexture().setReflectivity(0.5f);
+		blocks.add(gold);
 		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
@@ -35,6 +40,9 @@ public class MainGameLoop {
 			
 			// GAME LOGIC
 			camera.update();
+//			for (Block block:blocks) {				
+//				block.getEntity().changeRotation(0.3f, 0.3f, 0);
+//			}
 			light.setPosition(camera.getPosition());
 			
 			// RENDER STEP

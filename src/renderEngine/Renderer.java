@@ -12,6 +12,7 @@ import entities.Entity;
 import models.RawModel;
 import models.TexturedModel;
 import shaders.StaticShader;
+import textures.ModelTexture;
 import toolbox.Maths;
 
 public class Renderer {
@@ -46,8 +47,11 @@ public class Renderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		Matrix4f transformMatrix = Maths.createTransformMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
-		
 		shader.loadTransformMatrix(transformMatrix);
+		
+		ModelTexture texture = tModel.getTexture();
+		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tModel.getTexture().getID());
 		GL11.glDrawElements(GL11.GL_TRIANGLES, rModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
