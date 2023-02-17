@@ -17,6 +17,12 @@ public class Camera {
 	private float yaw; // left right rotation, or y rotation
 	private float roll; // tilt of camera, or z rotation
 	
+	public Camera(Vector3f position, Vector3f velocity) {
+		super();
+		this.position = position;
+		this.velocity = velocity;
+	}
+	
 	public void update() {
 		pitch += -Mouse.getDY() * turnSpeed;
 		yaw += Mouse.getDX() * turnSpeed;

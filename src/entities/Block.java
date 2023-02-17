@@ -40,9 +40,8 @@ public class Block {
 			0.5f,-0.5f,-0.5f,
 			0.5f,-0.5f,0.5f	
 	};
-	
 	private float half = 0.5f;
-	private final float[] textureCoords = {
+	private final float[] texture = { // texture coords
 			// back
 			0,half,
 			0,1,
@@ -94,11 +93,43 @@ public class Block {
 			20,21,23,
 			23,21,22
 	};
-
+	private final float[] normals = {
+		// back
+		0, 0, -1,
+		0, 0, -1,
+		0, 0, -1,
+		0, 0, -1,
+		// front
+		0, 0, 1,
+		0, 0, 1,
+		0, 0, 1,
+		0, 0, 1,
+		// right
+		1, 0, 0,
+		1, 0, 0,
+		1, 0, 0,
+		1, 0, 0,
+		// left
+		-1, 0, 0,
+		-1, 0, 0,
+		-1, 0, 0,
+		-1, 0, 0,
+		// top
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0,
+		// bottom 
+		0, -1, 0,
+		0, -1, 0,
+		0, -1, 0,
+		0, -1, 0,
+	};
+	
 	private Entity entity;
 	
 	public Block(Loader loader, String type, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
-		RawModel rModel = loader.loadToVAO(vertices, textureCoords, indices);
+		RawModel rModel = loader.loadToVAO(vertices, texture, normals, indices);
 		ModelTexture texture =  new ModelTexture(loader.loadTexture(type));
 		TexturedModel tModel = new TexturedModel(rModel, texture);
 		

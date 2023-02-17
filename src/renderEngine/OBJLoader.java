@@ -78,15 +78,47 @@ public class OBJLoader {
 				String[] vertex2 = currentLine[2].split("/");
 				String[] vertex3 = currentLine[3].split("/");
 				
-				
+				processVertex(vertex1, indices, textures, normals, texturesArray, normalsArray);
+				processVertex(vertex2, indices, textures, normals, texturesArray, normalsArray);
+				processVertex(vertex3, indices, textures, normals, texturesArray, normalsArray);
+				line = reader.readLine();
 			}
+			
+			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		verticesArray = new float[vertices.size() * 3];
+		indicesArray = new int[indices.size()];
+		
+		int vertPtr = 0;
+		for (Vector3f vertex:vertices) {
+			verticesArray[vertPtr++] = vertex.x;
+			verticesArray[vertPtr++] = vertex.y;
+			verticesArray[vertPtr++] = vertex.z;
+		}
+		
+		for (int i = 0; i < indices.size(); i++) {
+			indicesArray[i] = indices.get(i);
+		}
+		
+		return loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
 	}
 	
 	private static void processVertex(String[] vertexData, List<Integer> indices, List<Vector2f> textures, 
 			List<Vector3f> normals, float[] texturesArray, float[] normalsArray) {
+		int curPtr = Integer.parseInt(vertexData[0]) - 1;
+		indices.add(curPtr);
 		
+		Vector2f curTex = textures.get(Integer.parseInt(vertexData[1]) - 1);
+		texturesArray[curPtr * 2] = curTex.x;
+		texturesArray[curPtr * 2 + 1] = 1 - curTex.y;
+		// subtract one since opengl starts at top left, obj starts bottom left
+		
+		Vector3f curNorm = normals.get(Integer.parseInt(vertexData[2]) - 1);
+		normalsArray[curPtr * 3] = curNorm.x;
+		normalsArray[curPtr * 3 + 1] = curNorm.y;
+		normalsArray[curPtr * 3 + 2] = curNorm.z;
 	}
 }

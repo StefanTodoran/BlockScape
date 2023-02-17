@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import entities.Block;
 import entities.Camera;
+import entities.Light;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.Renderer;
@@ -26,17 +27,22 @@ public class MainGameLoop {
 		blocks.add(new Block(loader, "grass_block", new Vector3f(-1, 0, -5), 0, 0, 0, 1));
 		blocks.add(new Block(loader, "clay_block", new Vector3f(1, 0, -5), 0, 0, 0, 1));
 		
-		Camera camera = new Camera();
+		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
 		
 		boolean closeRequested = false;
 		while (!closeRequested) {
 			
-			// TODO: GAME LOGIC HERE
+			// GAME LOGIC
 			camera.update();
+			light.setPosition(camera.getPosition());
 			
+			// RENDER STEP
 			renderer.prepare();
 			shader.start();
+			shader.loadLight(light);
 			shader.loadViewMatrix(camera);
+			
 			for (Block block:blocks) {				
 				renderer.render(block, shader);
 			}

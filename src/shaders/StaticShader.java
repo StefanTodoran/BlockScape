@@ -25,15 +25,17 @@ public class StaticShader extends ShaderProgram {
 	protected void bindAttributes() {
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "texture");
+		super.bindAttribute(2, "normal");
 	}
 	
 	@Override
 	protected void getAllUniformLocations() {
+		// The string argument is the name in the GLSL code.
 		locTransformMatrix = super.getUniformLocation("transformMatrix");
 		locProjectMatrix = super.getUniformLocation("projectMatrix");
 		locViewMatrix = super.getUniformLocation("viewMatrix");
-		locLightPos = super.getUniformLocation("locLightPos");
-		locLightColor = super.getUniformLocation("locLightColor");
+		locLightPos = super.getUniformLocation("lightPosition");
+		locLightColor = super.getUniformLocation("lightColor");
 	}
 	
 	public void loadTransformMatrix(Matrix4f matrix) {
