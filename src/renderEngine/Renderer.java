@@ -24,6 +24,8 @@ public class Renderer {
 	private Matrix4f projectMatrix;
 	
 	public Renderer(StaticShader shader) {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
 		createProjectMatrix();
 		shader.start();
 		shader.loadProjectMatrix(projectMatrix);
@@ -35,6 +37,31 @@ public class Renderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
+	}
+	
+	public void render(Entity entity, StaticShader shader) {
+		TexturedModel tModel = entity.getModel();
+		RawModel rModel = tModel.getRawModel();
+		GL30.glBindVertexArray(rModel.getVaoID());
+		
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
+		Matrix4f transformMatrix = Maths.createTransformMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
+		shader.loadTransformMatrix(transformMatrix);
+		
+		ModelTexture texture = tModel.getTexture();
+		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tModel.getTexture().getID());
+		GL11.glDrawElements(GL11.GL_TRIANGLES, rModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+		
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
+		
+		GL30.glBindVertexArray(0);
 	}
 	
 	public void render(Block block, StaticShader shader) {

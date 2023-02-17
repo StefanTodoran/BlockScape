@@ -8,11 +8,16 @@ import org.lwjgl.util.vector.Vector3f;
 
 import entities.Block;
 import entities.Camera;
+import entities.Entity;
 import entities.Light;
+import models.RawModel;
+import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
+import renderEngine.OBJLoader;
 import renderEngine.Renderer;
 import shaders.StaticShader;
+import textures.ModelTexture;
 
 public class MainGameLoop {
 
@@ -31,6 +36,10 @@ public class MainGameLoop {
 		gold.getEntity().getModel().getTexture().setShineDamper(5);
 		gold.getEntity().getModel().getTexture().setReflectivity(0.5f);
 		blocks.add(gold);
+		
+		RawModel rModel = OBJLoader.loadObjModel("block.obj", loader);
+		TexturedModel tModel = new TexturedModel(rModel, new ModelTexture(loader.loadTexture("soil")));
+		Entity entity = new Entity(tModel, new Vector3f(0, 0, -10), 0, 0, 0, 1);
 		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
@@ -51,6 +60,7 @@ public class MainGameLoop {
 			shader.loadLight(light);
 			shader.loadViewMatrix(camera);
 			
+			renderer.render(entity, shader);
 			for (Block block:blocks) {				
 				renderer.render(block, shader);
 			}
