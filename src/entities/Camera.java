@@ -23,34 +23,46 @@ public class Camera {
 		this.velocity = velocity;
 	}
 	
+	public Camera(Vector3f position, Vector3f velocity, float yaw) {
+		super();
+		this.position = position;
+		this.velocity = velocity;
+		this.yaw = yaw;
+	}
+	
 	public void update() {
 		pitch += -Mouse.getDY() * turnSpeed;
 		yaw += Mouse.getDX() * turnSpeed;
 		
+		float curMoveSpeed = moveSpeed;
+		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			curMoveSpeed = moveSpeed * 2;
+		}
+		
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			// position.z -= moveSpeed;
-			velocity.z = -1 * moveSpeed;
+			// position.z -= curMoveSpeed;
+			velocity.z = -1 * curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			// position.x -= moveSpeed;
-			velocity.x = -1 * moveSpeed;
+			// position.x -= curMoveSpeed;
+			velocity.x = -1 * curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			// position.z += moveSpeed;
-			velocity.z = moveSpeed;
+			// position.z += curMoveSpeed;
+			velocity.z = curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			// position.x += moveSpeed;
-			velocity.x = moveSpeed;
+			// position.x += curMoveSpeed;
+			velocity.x = curMoveSpeed;
 		}
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-			// position.y += moveSpeed;
-			velocity.y = moveSpeed;
+			// position.y += curMoveSpeed;
+			velocity.y = curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			// position.y -= moveSpeed;
-			velocity.y = -1 * moveSpeed;
+			// position.y -= curMoveSpeed;
+			velocity.y = -1 * curMoveSpeed;
 		}
 		
 		float dx = (float) -(velocity.z * Math.sin(Math.toRadians(yaw)));
@@ -61,7 +73,6 @@ public class Camera {
 		Vector3f.add(position, new Vector3f(dx, 0, dz), position);
 		Vector3f.add(position, new Vector3f(0, velocity.y, 0), position);
 		
-//		Vector3f.add(position, velocity, position);
 		velocity.scale(velFalloff);
 	}
 	

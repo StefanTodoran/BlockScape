@@ -8,16 +8,10 @@ import org.lwjgl.util.vector.Vector3f;
 
 import entities.Block;
 import entities.Camera;
-import entities.Entity;
 import entities.Light;
-import models.RawModel;
-import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import renderEngine.OBJLoader;
-import renderEngine.Renderer;
-import shaders.StaticShader;
-import textures.ModelTexture;
+import renderEngine.MasterRenderer;
 
 public class MainGameLoop {
 
@@ -25,53 +19,40 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		
 		Loader loader = new Loader();
-		StaticShader shader = new StaticShader();
-		Renderer renderer = new Renderer(shader);
+		MasterRenderer renderer = new MasterRenderer();
 		
 		List<Block> blocks = new ArrayList<Block>();
-		blocks.add(new Block(loader, "grass_block", new Vector3f(-2, 0, -5), 0, 0, 0, 1));
-		blocks.add(new Block(loader, "clay_block", new Vector3f(0, 0, -5), 0, 0, 0, 1));
 		
-		Block gold = new Block(loader, "gold_block", new Vector3f(2, 0, -5), 0, 0, 0, 1);
+		blocks.add(new Block(loader, "grass_block", new Vector3f(2, 0, 5), 0, 0, 0, 1));
+		blocks.add(new Block(loader, "clay_block", new Vector3f(0, 0, 5), 0, 0, 0, 1));
+		
+		Block gold = new Block(loader, "gold_block", new Vector3f(-2, 0, 5), 0, 0, 0, 1);
 		gold.getEntity().getModel().getTexture().setShineDamper(5);
 		gold.getEntity().getModel().getTexture().setReflectivity(0.5f);
 		blocks.add(gold);
 		
-		RawModel rModel = OBJLoader.loadObjModel("block.obj", loader);
-		TexturedModel tModel = new TexturedModel(rModel, new ModelTexture(loader.loadTexture("soil")));
-		Entity entity = new Entity(tModel, new Vector3f(0, 0, -10), 0, 0, 0, 1);
-		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
+		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), -225);
 		
 		boolean closeRequested = false;
 		while (!closeRequested) {
 			
 			// GAME LOGIC
 			camera.update();
-//			for (Block block:blocks) {				
-//				block.getEntity().changeRotation(0.3f, 0.3f, 0);
-//			}
 			light.setPosition(camera.getPosition());
 			
 			// RENDER STEP
-			renderer.prepare();
-			shader.start();
-			shader.loadLight(light);
-			shader.loadViewMatrix(camera);
-			
-			renderer.render(entity, shader);
-			for (Block block:blocks) {				
-				renderer.render(block, shader);
+			for (Block block : blocks) {				
+				renderer.processEntity(block);
 			}
-			shader.stop();
+			renderer.render(light, camera);
 			
 			// isCloseRequested handles the X button
 			// updateDisplay checks for escape keypress
 			closeRequested = DisplayManager.updateDisplay() || Display.isCloseRequested();
 		}
 		
-		shader.cleanUp();
+		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 	}

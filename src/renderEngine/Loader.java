@@ -38,7 +38,6 @@ public class Loader {
 		Texture texture = null;
 		try {
 			String path = "textures/" + fileName + ".png";
-//			texture = TextureLoader.getTexture("PNG", new FileInputStream(path));
 			texture = TextureLoader.getTexture("PNG", new FileInputStream(path), GL11.GL_NEAREST);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

@@ -1,5 +1,8 @@
 package entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
@@ -9,31 +12,7 @@ import textures.ModelTexture;
 
 public class Block {
 
-//	private final int[] indices = {
-//		// repeating vertices and actually taken adavantage of
-//		// indices list causes wack lighting and texturing??		
-	
-//		// back
-//		3,2,1,
-//		1,0,3,
-//		// front
-//		4,5,7,
-//		7,5,6,
-//		// side
-//		3,7,2,
-//		7,6,2,
-//		//side
-//		0,1,4,
-//		4,1,5,
-//		// top
-//		4,7,0,
-//		7,3,0,
-//		// bottom
-//		5,1,23,
-//		23,1,2
-//	};
-	
-	private final float[] vertices = {			
+	private static final float[] vertices = {			
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
@@ -64,7 +43,7 @@ public class Block {
 			0.5f,-0.5f,-0.5f,
 			0.5f,-0.5f,0.5f	
 	};
-	private final int[] indices = {
+	private static final int[] indices = {
 			// back
 			3,2,1,
 			1,0,3,
@@ -84,8 +63,8 @@ public class Block {
 			20,21,23,
 			23,21,22
 	};
-	private float half = 0.5f;
-	private final float[] texture = { // texture coords
+	private static float half = 0.5f;
+	private static final float[] texture = { // texture coords
 			// back
 			0,half,
 			0,1,
@@ -117,7 +96,7 @@ public class Block {
 			1,1,
 			1,half
 	};
-	private final float[] normals = {
+	private static final float[] normals = {
 		// back
 		0, 0, -1,
 		0, 0, -1,
@@ -151,12 +130,11 @@ public class Block {
 	};
 	
 	private Entity entity;
+	private static RawModel rModel = null; // block model, shared across all blocks
+	private static Map<String, TexturedModel> map = new HashMap<String, TexturedModel>();
 	
 	public Block(Loader loader, String type, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
-		RawModel rModel = loader.loadToVAO(vertices, texture, normals, indices);
-		ModelTexture texture =  new ModelTexture(loader.loadTexture(type));
-		TexturedModel tModel = new TexturedModel(rModel, texture);
-		
+		TexturedModel tModel = getTexturedModel(loader, type);
 		entity = new Entity(tModel, position, rotX, rotY, rotZ, scale);
 	}
 
@@ -166,6 +144,19 @@ public class Block {
 
 	public void setEntity(Entity entity) {
 		this.entity = entity;
+	}
+	
+	public static TexturedModel getTexturedModel(Loader loader, String type) {
+		if (rModel == null) {
+			rModel = loader.loadToVAO(vertices, texture, normals, indices);
+		}
+		
+		if (!map.containsKey(type)) {
+			ModelTexture texture =  new ModelTexture(loader.loadTexture(type));
+			TexturedModel tModel = new TexturedModel(rModel, texture);
+			map.put(type, tModel);
+		}
+		return map.get(type);
 	}
 
 }
