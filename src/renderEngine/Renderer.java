@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
-import entities.Block;
 import entities.Chunk;
 import entities.Entity;
 import models.RawModel;
@@ -60,13 +59,13 @@ public class Renderer {
 		}
 	}
 
-	public void render(Map<TexturedModel, List<Block>> blocks) {
-		for (TexturedModel model : blocks.keySet()) {
+	public void render(Map<TexturedModel, List<Entity>> entities) {
+		for (TexturedModel model : entities.keySet()) {
 			prepareTexturedModel(model);
-			List<Block> batch = blocks.get(model);
+			List<Entity> batch = entities.get(model);
 			
-			for (Block block : batch) {
-				prepareInstance(block.getEntity());
+			for (Entity entity : batch) {
+				prepareInstance(entity);
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 			}
 			unbindTexturedModel();

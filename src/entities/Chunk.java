@@ -1,6 +1,7 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class Chunk {
 	private static final int TEXTURE_SIZE = 16;
 	
 	// String of the form "x,y,z" specified as integers.
-	private Map<String, Boolean> blocks;
+	private Map<String, Block> blocks;
 	private boolean[][][] occupied;
 	private TexturedModel tModel;
 	private Vector3f position;
@@ -59,8 +60,71 @@ public class Chunk {
 			new Vector3f(0.5f,-0.5f,-0.5f),
 			new Vector3f(0.5f,-0.5f,0.5f),
 	};
+//	private static final Vector2f[] textureCoords = {
+//			// front or back (z sides)
+//			new Vector2f(0,0.5f),
+//			new Vector2f(0,1),
+//			new Vector2f(0.5f,1),
+//			new Vector2f(0.5f,0.5f),
+//
+//			// +x and -x sides
+//			new Vector2f(1,0),
+//			new Vector2f(1,0.5f),
+//			new Vector2f(0.5f,0.5f),
+//			new Vector2f(0.5f,0),
+//
+//			// top
+//			new Vector2f(0,0),
+//			new Vector2f(0,0.5f),
+//			new Vector2f(0.5f,0.5f),
+//			new Vector2f(0.5f,0),
+//
+//			// bottom
+//			new Vector2f(0.5f,0.5f),
+//			new Vector2f(0.5f,1),
+//			new Vector2f(1,1),
+//			new Vector2f(1,0.5f),
+//	};
+	private static final Vector3f[] normVectors = {
+			new Vector3f(0, 0, -1),
+			new Vector3f(0, 0, -1),
+			new Vector3f(0, 0, -1),
+			new Vector3f(0, 0, -1),
+			
+			new Vector3f(0, 0, 1),
+			new Vector3f(0, 0, 1),
+			new Vector3f(0, 0, 1),
+			new Vector3f(0, 0, 1),
+
+			new Vector3f(1, 0, 0),
+			new Vector3f(1, 0, 0),
+			new Vector3f(1, 0, 0),
+			new Vector3f(1, 0, 0),
+
+			new Vector3f(-1, 0, 0),
+			new Vector3f(-1, 0, 0),
+			new Vector3f(-1, 0, 0),
+			new Vector3f(-1, 0, 0),
+
+			new Vector3f(0, 1, 0),
+			new Vector3f(0, 1, 0),
+			new Vector3f(0, 1, 0),
+			new Vector3f(0, 1, 0),
+
+			new Vector3f(0, -1, 0),
+			new Vector3f(0, -1, 0),
+			new Vector3f(0, -1, 0),
+			new Vector3f(0, -1, 0),
+	};
+	@SuppressWarnings("serial") // Won't be serializing this so don't bother.
+	private static final Map<String, Vector2f> textureOffsets = new HashMap<String, Vector2f>() {{
+		put("grass_block", new Vector2f(0, 0));
+		put("gold_block", new Vector2f(0.5f, 0));
+		put("clay_block", new Vector2f(0, 0.5f));
+		put("soil_block", new Vector2f(0.5f, 0.5f));
+	}};
 	
-	public Chunk(Loader loader, Map<String, Boolean> blocks, Vector3f position) {
+	public Chunk(Loader loader, Map<String, Block> blocks, Vector3f position) {
 		this.blocks = blocks;
 		this.position = position;
 		this.occupied = new boolean[SIZE][SIZE][SIZE];
@@ -85,7 +149,6 @@ public class Chunk {
 				for (int z = 0; z < SIZE; z++) {
 					String pos = String.format("%d,%d,%d", x, y, z);
 					occupied[x][y][z] = blocks.containsKey(pos);
-//					System.out.println(pos + blocks.containsKey(pos));
 				}
 			}
 		}
@@ -96,31 +159,35 @@ public class Chunk {
 				for (int z = 0; z < SIZE; z++) {					
 					if (occupied[x][y][z]) {						
 						String pos = String.format("%d,%d,%d", x, y, z);
-						//Block block = blocks.get(pos); TODO: will be used for texture
+						Block block = blocks.get(pos);
 
 						Vector3f posVect = new Vector3f(x, y, z);
-						if (!occupied[x][y][z-1]) {
-							addFrontFace(vertIndex, posVect, vertices, indices);
+						Vector2f textureCoords[] = getTextureCoords(textureOffsets.get(block.getType()));
+						
+						// We check if adjacent blocks are occupied or on chunk borders,
+						// to know if we need those faces in our mesh or not.
+						if (z-1 < 0 || !occupied[x][y][z-1]) {
+							addFrontFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (!occupied[x][y][z+1]) {
-							addBackFace(vertIndex, posVect, vertices, indices);
+						if (z+1 >= SIZE || !occupied[x][y][z+1]) {
+							addBackFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (!occupied[x+1][y][z]) {
-							addLeftFace(vertIndex, posVect, vertices, indices);
+						if (x+1 >= SIZE || !occupied[x+1][y][z]) {
+							addLeftFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (!occupied[x-1][y][z]) {
-							addRightFace(vertIndex, posVect, vertices, indices);
+						if (x-1 < 0 || !occupied[x-1][y][z]) {
+							addRightFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (!occupied[x][y+1][z]) {
-							addTopFace(vertIndex, posVect, vertices, indices);
+						if (y+1 >= SIZE || !occupied[x][y+1][z]) {
+							addTopFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (!occupied[x][y-1][z]) {
-							addBottomFace(vertIndex, posVect, vertices, indices);
+						if (y-1 < 0 || !occupied[x][y-1][z]) {
+							addBottomFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
 					}
@@ -128,23 +195,35 @@ public class Chunk {
 			}
 		}
 		
-		verticesArray = new float[vertices.size() * 3];
+		int i;
 		
-		int i = 0;
+		i = 0;
+		verticesArray = new float[vertices.size() * 3];
 		for (Vector3f vertex : vertices) {
 			verticesArray[i++] = vertex.x;
 			verticesArray[i++] = vertex.y;
 			verticesArray[i++] = vertex.z;
 		}
-		
+				
 		indicesArray = new int[indices.size()];
-		
 		for (i = 0; i < indices.size(); i++) {
 			indicesArray[i] = indices.get(i);
 		}
 		
-		normalsArray = new float[vertices.size()*3];
-		texturesArray = new float[vertices.size()*2];
+		i = 0;
+		texturesArray = new float[textures.size() * 2];
+		for (Vector2f texture : textures) {
+			texturesArray[i++] = texture.x;
+			texturesArray[i++] = texture.y;
+		}
+		
+		i = 0;
+		normalsArray = new float[normals.size() * 3];
+		for (Vector3f normal : normals) {
+			normalsArray[i++] = normal.x;
+			normalsArray[i++] = normal.y;
+			normalsArray[i++] = normal.z;
+		}
 		
 		RawModel rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
 		// TODO: Make this model texture static!
@@ -157,7 +236,8 @@ public class Chunk {
 	// FACE HELPER METHODS \\
 	// =================== \\
 	
-	private void addFrontFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addFrontFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[0], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[1], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[2], offset, new Vector3f(0, 0, 0)));
@@ -168,9 +248,21 @@ public class Chunk {
 		indices.add(vi+1); // 1
 		indices.add(vi); // 0
 		indices.add(vi+3); // 3
+		
+		// Will need to do some kind of block based ofset
+		textures.add(textureCoords[0]);
+		textures.add(textureCoords[1]);
+		textures.add(textureCoords[2]);
+		textures.add(textureCoords[3]);
+		
+		normals.add(normVectors[0]);
+		normals.add(normVectors[1]);
+		normals.add(normVectors[2]);
+		normals.add(normVectors[3]);
 	}
 
-	private void addBackFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addBackFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[4], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[5], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[6], offset, new Vector3f(0, 0, 0)));
@@ -181,9 +273,20 @@ public class Chunk {
 		indices.add(vi+3); // 7
 		indices.add(vi+1); // 5
 		indices.add(vi+2); // 6
+		
+		textures.add(textureCoords[0]);
+		textures.add(textureCoords[1]);
+		textures.add(textureCoords[2]);
+		textures.add(textureCoords[3]);
+		
+		normals.add(normVectors[4]);
+		normals.add(normVectors[5]);
+		normals.add(normVectors[6]);
+		normals.add(normVectors[7]);
 	}
 
-	private void addLeftFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addLeftFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[8], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[9], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[10], offset, new Vector3f(0, 0, 0)));
@@ -194,9 +297,20 @@ public class Chunk {
 		indices.add(vi+3); // 11
 		indices.add(vi+2); // 10
 		indices.add(vi+1); // 9
+		
+		textures.add(textureCoords[4]);
+		textures.add(textureCoords[5]);
+		textures.add(textureCoords[6]);
+		textures.add(textureCoords[7]);
+		
+		normals.add(normVectors[8]);
+		normals.add(normVectors[9]);
+		normals.add(normVectors[10]);
+		normals.add(normVectors[11]);
 	}
 
-	private void addRightFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addRightFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[12], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[13], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[14], offset, new Vector3f(0, 0, 0)));
@@ -207,9 +321,20 @@ public class Chunk {
 		indices.add(vi+3); // 15
 		indices.add(vi+1); // 13
 		indices.add(vi+2); // 14
+		
+		textures.add(textureCoords[4]);
+		textures.add(textureCoords[5]);
+		textures.add(textureCoords[6]);
+		textures.add(textureCoords[7]);
+		
+		normals.add(normVectors[12]);
+		normals.add(normVectors[13]);
+		normals.add(normVectors[14]);
+		normals.add(normVectors[15]);
 	}
 
-	private void addTopFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addTopFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[16], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[17], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[18], offset, new Vector3f(0, 0, 0)));
@@ -220,9 +345,20 @@ public class Chunk {
 		indices.add(vi+3); // 19
 		indices.add(vi+2); // 18
 		indices.add(vi+1); // 17
+		
+		textures.add(textureCoords[8]);
+		textures.add(textureCoords[9]);
+		textures.add(textureCoords[10]);
+		textures.add(textureCoords[11]);
+		
+		normals.add(normVectors[16]);
+		normals.add(normVectors[17]);
+		normals.add(normVectors[18]);
+		normals.add(normVectors[19]);
 	}
 
-	private void addBottomFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices) {
+	private void addBottomFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
+List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[20], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[21], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[22], offset, new Vector3f(0, 0, 0)));
@@ -233,7 +369,63 @@ public class Chunk {
 		indices.add(vi+3); // 23
 		indices.add(vi+1); // 21
 		indices.add(vi+2); // 22
+		
+		textures.add(textureCoords[12]);
+		textures.add(textureCoords[13]);
+		textures.add(textureCoords[14]);
+		textures.add(textureCoords[15]);
+		
+		normals.add(normVectors[20]);
+		normals.add(normVectors[21]);
+		normals.add(normVectors[22]);
+		normals.add(normVectors[23]);
 	}
+	
+	// TEXTURE HELPER METHODS \\
+	// ====================== \\
+	
+	private static Vector2f[] getTextureCoords(Vector2f offset) {
+		// start texture x, start texture y
+		float stx = offset.x;
+		float sty = offset.y;
+		
+		// texture size
+		float ts = 0.5f;
+		
+		// half and end texture coords
+		float htx = stx + (ts / 2);
+		float hty = sty + (ts / 2);
+		float etx = stx + ts;
+		float ety = sty + ts;
+		
+		final Vector2f[] textureCoords = {
+				// front or back (z sides)
+				new Vector2f(stx,hty),
+				new Vector2f(stx,ety),
+				new Vector2f(htx,ety),
+				new Vector2f(htx,hty),
+				
+				// +x and -x sides
+				new Vector2f(etx,sty),
+				new Vector2f(etx,hty),
+				new Vector2f(htx,hty),
+				new Vector2f(htx,sty),
+				
+				// top
+				new Vector2f(stx,sty),
+				new Vector2f(stx,hty),
+				new Vector2f(htx,hty),
+				new Vector2f(htx,sty),
+				
+				// bottom
+				new Vector2f(htx,hty),
+				new Vector2f(htx,ety),
+				new Vector2f(etx,ety),
+				new Vector2f(etx,hty),
+		};
+		
+		return textureCoords;
+	}	
 	
 	// GETTERS AND SETTERS \\
 	// =================== \\

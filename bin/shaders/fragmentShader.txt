@@ -29,6 +29,7 @@ void main(void) {
 	vec3 specular = dampedFactor * reflectivity * lightColor;
 	
 	// somehow get size 32 from texture size?
-	vec2 pixelCoords = floor(textureCoords * 32) / 32;
+	// vec2 pixelCoords = floor(textureCoords * 32) / 32;
+	vec2 pixelCoords = textureCoords;
 	outColor = vec4(diffuse, 1) * texture(textureSampler, pixelCoords) + vec4(specular, 1.0);
 }

@@ -24,23 +24,25 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer();
 		
-		List<Block> blocks = new ArrayList<Block>();
+		List<Chunk> chunks = new ArrayList<Chunk>();
 		
-		blocks.add(new Block(loader, "grass_block", new Vector3f(2, 0, 5), 0, 0, 0, 1));
-		blocks.add(new Block(loader, "clay_block", new Vector3f(0, 0, 5), 0, 0, 0, 1));
-		
-		Block gold = new Block(loader, "gold_block", new Vector3f(-2, 0, 5), 0, 0, 0, 1);
-		gold.getEntity().getModel().getTexture().setShineDamper(5);
-		gold.getEntity().getModel().getTexture().setReflectivity(0.5f);
-		blocks.add(gold);
-		
-		Map<String, Boolean> data = new HashMap<String, Boolean>();
-		data.put("1,1,1", true);
-		data.put("2,3,4", true);
-		Chunk chunk = new Chunk(loader, data, new Vector3f(0, 0, 10));
+		Map<String, Block> data = new HashMap<String, Block>();
+		for (int x = 0; x < 16; x++) {
+			for (int y = 0; y < 16; y++) {
+				for (int z = 0; z < 16; z++) {
+					String pos = String.format("%d,%d,%d", x, y, z);
+					if (y == 15) {						
+						data.put(pos, new Block("grass_block"));
+					} else {						
+						data.put(pos, new Block("soil_block"));
+					}
+				}
+			}
+		}
+		chunks.add(new Chunk(loader, data, new Vector3f(0, 0, -16)));
 		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), -225);
+		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
 		
 		boolean closeRequested = false;
 		while (!closeRequested) {
@@ -50,10 +52,9 @@ public class MainGameLoop {
 			light.setPosition(camera.getPosition());
 			
 			// RENDER STEP
-			for (Block block : blocks) {				
-				renderer.processEntity(block);
+			for (Chunk chunk : chunks) {				
+				renderer.processChunk(chunk);
 			}
-			renderer.processChunk(chunk);
 			renderer.render(light, camera);
 			
 			// isCloseRequested handles the X button

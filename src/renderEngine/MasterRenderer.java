@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import entities.Block;
 import entities.Camera;
 import entities.Chunk;
+import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
 import shaders.StaticShader;
@@ -17,7 +17,7 @@ public class MasterRenderer {
 	private StaticShader shader = new StaticShader();
 	private Renderer renderer = new Renderer(shader);
 	
-	private Map<TexturedModel, List<Block>> blocks = new HashMap<TexturedModel, List<Block>>();
+	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<TexturedModel, List<Chunk>> chunks = new HashMap<TexturedModel, List<Chunk>>();
 	
 	public void render(Light sun, Camera camera) {
@@ -25,22 +25,23 @@ public class MasterRenderer {
 		shader.start();
 		shader.loadLight(sun);
 		shader.loadViewMatrix(camera);
-		renderer.render(blocks);
+//		renderer.render(entities);
 		renderer.renderChunks(chunks);
 		shader.stop();
-		blocks.clear();
+//		entities.clear();
+		chunks.clear();
 	}
 	
-	public void processEntity(Block block) {
-		TexturedModel tModel = block.getEntity().getModel();
-		List<Block> batch = blocks.get(tModel);
+	public void processEntity(Entity entity) {
+		TexturedModel tModel = entity.getModel();
+		List<Entity> batch = entities.get(tModel);
 		
 		if (batch != null) {
-			batch.add(block);
+			batch.add(entity);
 		} else {
-			List<Block> newBatch = new ArrayList<Block>();
-			newBatch.add(block);
-			blocks.put(tModel, newBatch);
+			List<Entity> newBatch = new ArrayList<Entity>();
+			newBatch.add(entity);
+			entities.put(tModel, newBatch);
 		}
 	}
 	
