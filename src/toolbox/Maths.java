@@ -20,6 +20,16 @@ public class Maths {
 		return matrix;
 	}
 	
+	// Returns a transformation matrix like createTransformMatrix(),
+	// but skips all rotation and scaling steps.
+	public static Matrix4f createTranslationMatrix(Vector3f translation) {
+		Matrix4f matrix = new Matrix4f();
+		matrix.setIdentity();
+		
+		Matrix4f.translate(translation, matrix, matrix);
+		return matrix;
+	}
+	
 	public static Matrix4f createViewMatrix(Camera camera) {
 		Matrix4f viewMatrix = new Matrix4f();
 		viewMatrix.setIdentity();
