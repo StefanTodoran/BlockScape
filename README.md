@@ -1,6 +1,7 @@
 <h1>
-  <img src="textures/emerald.png" alt="Spirit Showdown" align="center" style="height: 2em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
+  <img src="textures/emerald.png" align="center" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
   Escape the Down Under
+  <img src="textures/limestone.png" align="center" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
 </h1>
 
 ## About

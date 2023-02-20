@@ -16,8 +16,8 @@ public class PerlinNoise {
         final float[][] perlinNoise = new float[width][height];
         final float[][][] noiseLayers = new float[octaveCount][][];
  
-        Random random = new Random(seed);
-        //fill base array with random values as base for noise
+         Random random = new Random(seed);
+        // fill base array with random values as base for noise
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 base[x][y] = random.nextFloat();

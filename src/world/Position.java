@@ -14,8 +14,20 @@ public final class Position {
         this.z = z;
     }
     
+    public Position(Vector3f vector){
+        this.x = (int) vector.x;
+        this.y = (int) vector.y;
+        this.z = (int) vector.z;
+    }
+    
     public Vector3f toVector() {
     	return new Vector3f(x, y, z);
+    }
+    
+    public boolean withinDistance(Position other, int distance) {
+    	return Math.abs(this.x - other.x) < distance && 
+    		   Math.abs(this.y - other.y) < distance &&
+    		   Math.abs(this.z - other.z) < distance;
     }
 
     @Override
@@ -36,4 +48,10 @@ public final class Position {
 		Position other = (Position) obj;
 		return x == other.x && y == other.y && z == other.z;
 	}
+
+	@Override
+	public String toString() {
+		return "Position [x=" + x + ", y=" + y + ", z=" + z + "]";
+	}
+    
 }

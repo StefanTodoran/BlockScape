@@ -103,9 +103,12 @@ public class Chunk {
 		put("oak_log", new Vector2f(2*tsx, 0));
 	}};
 	
-	public Chunk(Loader loader, Map<Position, Block> blocks, Vector3f position) {
+	public Chunk(Map<Position, Block> blocks, Vector3f position) {
 		this.blocks = blocks;
 		this.position = position;
+	}
+	
+	public void updateMesh(Loader loader) {
 		this.occupied = new boolean[SIZE][SIZE][SIZE];
 		
 		// We don't know how many vertices and other mesh data
@@ -427,6 +430,10 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 
 	public Map<Position, Block> getBlocks() {
 		return blocks;
+	}
+	
+	public void setBlocks(Map<Position, Block> newBlocks) {
+		this.blocks = newBlocks;
 	}
 
 	public boolean[][][] getOccupied() {
