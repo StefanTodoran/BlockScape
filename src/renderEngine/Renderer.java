@@ -10,13 +10,13 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
-import entities.Chunk;
-import entities.Entity;
 import models.RawModel;
 import models.TexturedModel;
 import shaders.StaticShader;
 import textures.ModelTexture;
 import toolbox.Maths;
+import world.Chunk;
+import world.Entity;
 
 public class Renderer {
 	

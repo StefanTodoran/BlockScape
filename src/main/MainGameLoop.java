@@ -1,20 +1,21 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
-import entities.Block;
-import entities.Camera;
-import entities.Chunk;
-import entities.Light;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
+import toolbox.PerlinNoise;
+import world.Block;
+import world.Camera;
+import world.Chunk;
+import world.Light;
+import world.Position;
 
 public class MainGameLoop {
 
@@ -24,25 +25,37 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer();
 		
-		List<Chunk> chunks = new ArrayList<Chunk>();
+		Map<Position, Chunk> chunks = new HashMap<Position, Chunk>();
+		int genX = 8; int genY = 4; int genZ = 8;
+		float[][] perlinNoise = PerlinNoise.generatePerlinNoise(genX * Chunk.SIZE, genZ * Chunk.SIZE, 6, 0.3f, 123456789L);
 		
-		Map<String, Block> data = new HashMap<String, Block>();
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				for (int z = 0; z < 16; z++) {
-					String pos = String.format("%d,%d,%d", x, y, z);
-					if (y == 15) {						
-						data.put(pos, new Block("grass_block"));
-					} else {						
-						data.put(pos, new Block("soil_block"));
+		for (int cx = 0; cx < genX; cx++) {
+			for (int cz = 0; cz < genZ; cz++) {
+														
+				Map<Position, Block> blocks = new HashMap<Position, Block>();
+				for (int x = 0; x < Chunk.SIZE; x++) {
+					for (int z = 0; z < Chunk.SIZE; z++) {
+						int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
+						Position pos = new Position(x, y, z);
+
+						blocks.put(pos, new Block("grass_block"));
+						for (y = y - 1; y >= 0; y--) {
+							pos = new Position(x, y, z);
+							
+							blocks.put(pos, new Block("soil_block"));
+						}
+						
 					}
 				}
+				
+				
+				Position chunkPos = new Position(cx*Chunk.SIZE, 0, cz*Chunk.SIZE);
+				chunks.put(chunkPos, new Chunk(loader, blocks, chunkPos.toVector()));
 			}
 		}
-		chunks.add(new Chunk(loader, data, new Vector3f(0, 0, -16)));
-		
+
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-		Camera camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));
+		Camera camera = new Camera(new Vector3f(0, 20, 0), new Vector3f(0, 0, 0), 135);
 		
 		boolean closeRequested = false;
 		while (!closeRequested) {
@@ -52,7 +65,8 @@ public class MainGameLoop {
 			light.setPosition(camera.getPosition());
 			
 			// RENDER STEP
-			for (Chunk chunk : chunks) {				
+			for (Position position : chunks.keySet()) {
+				Chunk chunk = chunks.get(position);
 				renderer.processChunk(chunk);
 			}
 			renderer.render(light, camera);

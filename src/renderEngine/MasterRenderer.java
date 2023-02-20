@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import entities.Camera;
-import entities.Chunk;
-import entities.Entity;
-import entities.Light;
 import models.TexturedModel;
 import shaders.StaticShader;
+import world.Camera;
+import world.Chunk;
+import world.Entity;
+import world.Light;
 
 public class MasterRenderer {
 

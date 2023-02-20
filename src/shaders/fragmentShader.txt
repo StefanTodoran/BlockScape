@@ -16,10 +16,14 @@ void main(void) {
 	
 	vec3 unitNormal = normalize(surfaceNormal);
 	vec3 unitLight = normalize(toLightVector);
+
+	float brightenFactor = 10; // TODO: get this from light like lightColor
+	float lightDist = max(1, length(toLightVector) / brightenFactor);
 	
 	float light = dot(unitNormal, unitLight);
-	float brightness = max(light, 0.1);
-	vec3 diffuse = brightness * lightColor;
+	float brightness = max(light, 0.01);
+	// vec3 diffuse = brightness * lightColor / lightDist;
+	vec3 diffuse = lightColor / lightDist;
 	
 	vec3 unitCamera = normalize(toCameraVector);
 	vec3 reflectedLight = reflect(-unitLight, unitNormal);
@@ -28,8 +32,6 @@ void main(void) {
 	float dampedFactor = pow(specFactor, shineDamper);
 	vec3 specular = dampedFactor * reflectivity * lightColor;
 	
-	// somehow get size 32 from texture size?
-	// vec2 pixelCoords = floor(textureCoords * 32) / 32;
-	vec2 pixelCoords = textureCoords;
-	outColor = vec4(diffuse, 1) * texture(textureSampler, pixelCoords) + vec4(specular, 1.0);
+	outColor = vec4(diffuse, 1) * texture(textureSampler, textureCoords) + vec4(specular, 1.0);
+	// outColor = texture(textureSampler, textureCoords);
 }

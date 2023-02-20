@@ -34,6 +34,16 @@ public class Loader {
 		return new RawModel(vaoID, indices.length);
 	}
 	
+//	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, int[] indices) {
+//		GL30.glBindVertexArray(vaoID);
+//		bindIndicesBuffer(indices);
+//		storeDataInAttributeList(0, 3, positions);
+//		storeDataInAttributeList(1, 2, textureCoords);
+//		storeDataInAttributeList(2, 3, normals);
+//		unbindVAO();
+//		return new RawModel(vaoID, indices.length);
+//	}
+	
 	public int loadTexture(String fileName) {
 		Texture texture = null;
 		try {
@@ -77,7 +87,7 @@ public class Loader {
 		GL20.glVertexAttribPointer(attributeNumber, coordSize, GL11.GL_FLOAT, false, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	private void unbindVAO() {
 		GL30.glBindVertexArray(0);
 	}
