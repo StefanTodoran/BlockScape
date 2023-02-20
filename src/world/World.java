@@ -45,9 +45,19 @@ public class World {
 					Position pos = new Position(x, y, z);
 					blocks.put(pos, new Block("soil_block"));
 					
-					for (int dy = y + 1; dy < Math.min(y + 5, Chunk.SIZE); dy++) {						
-						pos = new Position(x, dy, z);
-						blocks.put(pos, new Block("oak_log"));
+					for (int dy = y + 1; dy < Math.min(y + 6, Chunk.SIZE); dy++) {
+						int c = Math.min(2, dy - y - 2);
+						for (int dx = -c + 1; dx < c; dx++) {
+							for (int dz = -c + 1; dz < c; dz++) {
+								pos = new Position(x+dx, dy, z+dz);
+								blocks.put(pos, new Block("oak_leaves"));
+							}
+						}
+
+						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {							
+							pos = new Position(x, dy, z);
+							blocks.put(pos, new Block("oak_log"));
+						}
 					}
 				}
 				

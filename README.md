@@ -1,7 +1,7 @@
-<h1>
-  <img src="textures/emerald.png" align="center" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
+<h1 style="display: flex; flex-direction: row; align-items: center;">
+  <img src="textures/emerald.png" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
   Escape the Down Under
-  <img src="textures/limestone.png" align="center" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
+  <img src="textures/limestone.png" style="height: 1em; -ms-interpolation-mode: nearest-neighbor; image-rendering: crisp-edges; image-rendering: pixelated;"/>
 </h1>
 
 ## About

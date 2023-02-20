@@ -101,6 +101,7 @@ public class Chunk {
 		put("clay_block", new Vector2f(0, tsy));
 		put("soil_block", new Vector2f(tsx, tsy));
 		put("oak_log", new Vector2f(2*tsx, 0));
+		put("oak_leaves", new Vector2f(2*tsx, tsy));
 	}};
 	
 	public Chunk(Map<Position, Block> blocks, Vector3f position) {

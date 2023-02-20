@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+
 import models.TexturedModel;
 import shaders.StaticShader;
 import world.Camera;
@@ -22,13 +24,18 @@ public class MasterRenderer {
 	
 	public void render(Light sun, Camera camera) {
 		renderer.prepare();
+		
 		shader.start();
 		shader.loadLight(sun);
 		shader.loadViewMatrix(camera);
-//		renderer.render(entities);
+//		renderer.renderEntities(entities);
 		renderer.renderChunks(chunks);
 		shader.stop();
 //		entities.clear();
+
+//		GL11.glEnable(GL11.GL_BLEND);
+//		GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
+		renderer.renderReticle();
 		chunks.clear();
 	}
 	

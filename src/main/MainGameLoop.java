@@ -5,6 +5,7 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
+import models.Reticle;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -21,6 +22,9 @@ public class MainGameLoop {
 		
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer();
+		
+		Reticle reticle = new Reticle();
+		reticle.loadReticle(loader);
 
 		World world = new World(loader, 123456789L);
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
