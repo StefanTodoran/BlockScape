@@ -10,9 +10,20 @@ public class Block {
 	private String type;
 	private boolean cull;
 	
-	public Block(String type, boolean cull) {
+	@SuppressWarnings("serial")
+	private static final Map<String, Boolean> doCulling = new HashMap<String, Boolean>() {{
+		put("grass_block", true);
+		put("gold_block", true);
+		put("clay_block", true);
+		put("soil_block", true);
+		put("oak_log", true);
+		put("oak_leaves", false);
+		put("stone_block", true);
+	}};
+	
+	public Block(String type) {
 		this.type = type;
-		this.cull = cull;
+		this.cull = doCulling.get(type);
 	}
 	
 	// Information about the all.png texture file.

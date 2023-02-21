@@ -107,6 +107,8 @@ public class Chunk {
 		float[] texturesArray = null;
 		int[] indicesArray = null;
 		
+		boolean[][][] culls = new boolean[SIZE][SIZE][SIZE];
+		
 		// First we want to know everything about which blocks are
 		// occupied, so when building our vertices list we know which
 		// to leave out.
@@ -114,7 +116,9 @@ public class Chunk {
 			for (int y = 0; y < SIZE; y++) {
 				for (int z = 0; z < SIZE; z++) {
 					Position pos = new Position(x, y, z);
-					occupied[x][y][z] = blocks.containsKey(pos);
+					Block block = blocks.get(pos);
+					occupied[x][y][z] = block != null;
+					culls[x][y][z] = block != null && block.doCulling();
 				}
 			}
 		}
@@ -132,27 +136,27 @@ public class Chunk {
 						
 						// We check if adjacent blocks are occupied or on chunk borders,
 						// to know if we need those faces in our mesh or not.
-						if (z-1 < 0 || !occupied[x][y][z-1] || !block.doCulling()) {
+						if (z-1 < 0 || !cullsFace(x, y, z-1, culls) || !block.doCulling()) {
 							addFrontFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (z+1 >= SIZE || !occupied[x][y][z+1] || !block.doCulling()) {
+						if (z+1 >= SIZE || !cullsFace(x, y, z+1, culls) || !block.doCulling()) {
 							addBackFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (x+1 >= SIZE || !occupied[x+1][y][z] || !block.doCulling()) {
+						if (x+1 >= SIZE || !cullsFace(x+1, y, z, culls) || !block.doCulling()) {
 							addLeftFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (x-1 < 0 || !occupied[x-1][y][z] || !block.doCulling()) {
+						if (x-1 < 0 || !cullsFace(x-1, y, z, culls) || !block.doCulling()) {
 							addRightFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (y+1 >= SIZE || !occupied[x][y+1][z] || !block.doCulling()) {
+						if (y+1 >= SIZE || !cullsFace(x, y+1, z, culls) || !block.doCulling()) {
 							addTopFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (y-1 < 0 || !occupied[x][y-1][z] || !block.doCulling()) {
+						if (y-1 < 0 || !cullsFace(x, y-1, z, culls) || !block.doCulling()) {
 							addBottomFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
@@ -201,6 +205,10 @@ public class Chunk {
 	
 	// FACE HELPER METHODS \\
 	// =================== \\
+	
+	private boolean cullsFace(int x, int y, int z, boolean[][][] culls) {
+		return occupied[x][y][z] && culls[x][y][z];
+	}
 	
 	private void addFrontFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
 			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {

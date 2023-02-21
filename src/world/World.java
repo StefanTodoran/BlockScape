@@ -27,11 +27,11 @@ public class World {
 						int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
 						Position pos = new Position(x, y, z);
 
-						blocks.put(pos, new Block("grass_block", true));
+						blocks.put(pos, new Block("grass_block"));
 						for (y = y - 1; y >= 0; y--) {
 							pos = new Position(x, y, z);
 							
-							blocks.put(pos, new Block("stone_block", true));
+							blocks.put(pos, new Block("stone_block"));
 						}
 						
 					}
@@ -43,20 +43,20 @@ public class World {
 					int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
 					
 					Position pos = new Position(x, y, z);
-					blocks.put(pos, new Block("soil_block", true));
+					blocks.put(pos, new Block("soil_block"));
 					
 					for (int dy = y + 1; dy < Math.min(y + 6, Chunk.SIZE); dy++) {
 						int c = Math.min(2, dy - y - 2);
 						for (int dx = -c + 1; dx < c; dx++) {
 							for (int dz = -c + 1; dz < c; dz++) {
 								pos = new Position(x+dx, dy, z+dz);
-								blocks.put(pos, new Block("oak_leaves", true));
+								blocks.put(pos, new Block("oak_leaves"));
 							}
 						}
 
 						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {				
 							pos = new Position(x, dy, z);
-							blocks.put(pos, new Block("oak_log", true));
+							blocks.put(pos, new Block("oak_log"));
 						}
 					}
 				}
