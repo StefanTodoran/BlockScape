@@ -28,15 +28,14 @@ public class MasterRenderer {
 		shader.start();
 		shader.loadLight(sun);
 		shader.loadViewMatrix(camera);
-//		renderer.renderEntities(entities);
 		renderer.renderChunks(chunks);
 		shader.stop();
-//		entities.clear();
-
-//		GL11.glEnable(GL11.GL_BLEND);
-//		GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
-		renderer.renderReticle();
 		chunks.clear();
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
+		renderer.renderReticle();
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	public void processEntity(Entity entity) {
