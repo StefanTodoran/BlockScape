@@ -11,7 +11,7 @@ public class World {
 
 	private Map<Position, Chunk> chunks;
 	private long seed;
-	private int renderDistance = 4;
+	private int renderDistance = 8;
 	
 	public World(Loader loader, long seed) {
 		chunks = new HashMap<Position, Chunk>();
@@ -27,11 +27,11 @@ public class World {
 						int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
 						Position pos = new Position(x, y, z);
 
-						blocks.put(pos, new Block("grass_block"));
+						blocks.put(pos, new Block("grass_block", true));
 						for (y = y - 1; y >= 0; y--) {
 							pos = new Position(x, y, z);
 							
-							blocks.put(pos, new Block("soil_block"));
+							blocks.put(pos, new Block("stone_block", true));
 						}
 						
 					}
@@ -43,20 +43,20 @@ public class World {
 					int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
 					
 					Position pos = new Position(x, y, z);
-					blocks.put(pos, new Block("soil_block"));
+					blocks.put(pos, new Block("soil_block", true));
 					
 					for (int dy = y + 1; dy < Math.min(y + 6, Chunk.SIZE); dy++) {
 						int c = Math.min(2, dy - y - 2);
 						for (int dx = -c + 1; dx < c; dx++) {
 							for (int dz = -c + 1; dz < c; dz++) {
 								pos = new Position(x+dx, dy, z+dz);
-								blocks.put(pos, new Block("oak_leaves"));
+								blocks.put(pos, new Block("oak_leaves", true));
 							}
 						}
 
-						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {							
+						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {				
 							pos = new Position(x, dy, z);
-							blocks.put(pos, new Block("oak_log"));
+							blocks.put(pos, new Block("oak_log", true));
 						}
 					}
 				}
@@ -72,11 +72,30 @@ public class World {
 
 	public Map<Position, Chunk> getChunksAround(Position center) {
 		Map<Position, Chunk> nearby = new HashMap<Position, Chunk>();
-		for (Position pos : chunks.keySet()) {
-			if (pos.withinDistance(center, renderDistance * Chunk.SIZE)) {
-				nearby.put(pos, chunks.get(pos));
+		
+		int dist = renderDistance / 2;
+		for (int x = -dist; x < dist; x++) {
+			for (int y = -dist; y < dist; y++) {
+				for (int z = -dist; z < dist; z++) {
+					Position pos = new Position(x * Chunk.SIZE, y * Chunk.SIZE, z * Chunk.SIZE);
+					Position adj = Chunk.worldPosToChunkCoords(center);
+					adj.scale(Chunk.SIZE);
+					pos.add(adj);
+					
+					Chunk chunk = chunks.get(pos);
+					if (chunk != null) {			
+						nearby.put(pos, chunk);
+					}
+				}
 			}
 		}
+		
+		// I think this is worse?
+//		for (Position pos : chunks.keySet()) {
+//			if (pos.withinDistance(center, renderDistance * Chunk.SIZE)) {
+//				nearby.put(pos, chunks.get(pos));
+//			}
+//		}
 		return nearby;
 	}
 

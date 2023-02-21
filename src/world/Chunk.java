@@ -1,7 +1,6 @@
 package world;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,13 +16,6 @@ public class Chunk {
 
 	// This refers to chunk size in blocks.
 	public static final int SIZE = 16;
-	
-	// Information about the all.png texture file.
-	private static final int TEXTURES_WIDTH = 128;
-	private static final int TEXTURES_HEIGHT = 64;
-	private static final int TEXTURE_SIZE = 32;
-	private static float tsx = (float) TEXTURE_SIZE / TEXTURES_WIDTH;
-	private static float tsy = (float) TEXTURE_SIZE / TEXTURES_HEIGHT;
 	private static ModelTexture TEXTURE;
 	
 	// String of the form "x,y,z" specified as integers.
@@ -94,15 +86,6 @@ public class Chunk {
 			new Vector3f(0, -1, 0),
 			new Vector3f(0, -1, 0),
 	};
-	@SuppressWarnings("serial") // Won't be serializing this so don't bother.
-	private static final Map<String, Vector2f> textureOffsets = new HashMap<String, Vector2f>() {{
-		put("grass_block", new Vector2f(0, 0));
-		put("gold_block", new Vector2f(tsx, 0));
-		put("clay_block", new Vector2f(0, tsy));
-		put("soil_block", new Vector2f(tsx, tsy));
-		put("oak_log", new Vector2f(2*tsx, 0));
-		put("oak_leaves", new Vector2f(2*tsx, tsy));
-	}};
 	
 	public Chunk(Map<Position, Block> blocks, Vector3f position) {
 		this.blocks = blocks;
@@ -145,31 +128,31 @@ public class Chunk {
 						Block block = blocks.get(pos);
 
 						Vector3f posVect = new Vector3f(x, y, z);
-						Vector2f textureCoords[] = getTextureCoords(textureOffsets.get(block.getType()));
+						Vector2f textureCoords[] = block.getTextureCoords();
 						
 						// We check if adjacent blocks are occupied or on chunk borders,
 						// to know if we need those faces in our mesh or not.
-						if (z-1 < 0 || !occupied[x][y][z-1]) {
+						if (z-1 < 0 || !occupied[x][y][z-1] || !block.doCulling()) {
 							addFrontFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (z+1 >= SIZE || !occupied[x][y][z+1]) {
+						if (z+1 >= SIZE || !occupied[x][y][z+1] || !block.doCulling()) {
 							addBackFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (x+1 >= SIZE || !occupied[x+1][y][z]) {
+						if (x+1 >= SIZE || !occupied[x+1][y][z] || !block.doCulling()) {
 							addLeftFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (x-1 < 0 || !occupied[x-1][y][z]) {
+						if (x-1 < 0 || !occupied[x-1][y][z] || !block.doCulling()) {
 							addRightFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (y+1 >= SIZE || !occupied[x][y+1][z]) {
+						if (y+1 >= SIZE || !occupied[x][y+1][z] || !block.doCulling()) {
 							addTopFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
-						if (y-1 < 0 || !occupied[x][y-1][z]) {
+						if (y-1 < 0 || !occupied[x][y-1][z] || !block.doCulling()) {
 							addBottomFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
 							vertIndex += 4;
 						}
@@ -364,54 +347,15 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		normals.add(normVectors[23]);
 	}
 	
-	// TEXTURE HELPER METHODS \\
-	// ====================== \\
-	
-	private static Vector2f[] getTextureCoords(Vector2f offset) {
-		// start texture x, start texture y
-		float stx = offset.x;
-		float sty = offset.y;
-		
-		// half and end texture coords
-		float htx = stx + (tsx / 2);
-		float hty = sty + (tsy / 2);
-		float etx = stx + tsx;
-		float ety = sty + tsy;
-		
-		final Vector2f[] textureCoords = {
-				// front or back (z sides)
-				new Vector2f(stx,hty),
-				new Vector2f(stx,ety),
-				new Vector2f(htx,ety),
-				new Vector2f(htx,hty),
-				
-				// +x and -x sides
-				new Vector2f(etx,sty),
-				new Vector2f(etx,hty),
-				new Vector2f(htx,hty),
-				new Vector2f(htx,sty),
-				
-				// top
-				new Vector2f(stx,sty),
-				new Vector2f(stx,hty),
-				new Vector2f(htx,hty),
-				new Vector2f(htx,sty),
-				
-				// bottom
-				new Vector2f(htx,hty),
-				new Vector2f(htx,ety),
-				new Vector2f(etx,ety),
-				new Vector2f(etx,hty),
-		};
-		
-		return textureCoords;
-	}
-	
 	// OTHER CHUNK FUNCTIONS \\
 	// ===================== \\
 	
 	public static Position worldPosToChunkCoords(int x, int y, int z) {
 		return new Position(x / SIZE, y / SIZE, z / SIZE);
+	}
+
+	public static Position worldPosToChunkCoords(Position wp) {
+		return new Position(wp.x / SIZE, wp.y / SIZE, wp.z / SIZE);
 	}
 
 	public static Position worldPosToChunkPos(int x, int y, int z) {

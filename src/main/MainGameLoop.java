@@ -34,7 +34,7 @@ public class MainGameLoop {
 		while (!closeRequested) {
 			
 			// GAME LOGIC
-			camera.update();
+			int action = camera.doUpdateGetActions();
 			Vector3f camPos = camera.getPosition();
 			light.setPosition(camPos);
 			

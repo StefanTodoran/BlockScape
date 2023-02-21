@@ -30,9 +30,14 @@ public class Camera {
 		this.yaw = yaw;
 	}
 	
-	public void update() {
-		pitch += -Mouse.getDY() * turnSpeed;
-		yaw += Mouse.getDX() * turnSpeed;
+	public static final int NO_ACTION = -1;
+	public static final int LEFT_CLICK = 0;
+	public static final int RIGHT_CLICK = 2;
+	
+	private boolean mouseWasDown = false;
+	
+	public int doUpdateGetActions() {
+		updateRotation();
 		
 		float curMoveSpeed = moveSpeed;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -74,6 +79,20 @@ public class Camera {
 		Vector3f.add(position, new Vector3f(0, velocity.y, 0), position);
 		
 		velocity.scale(velFalloff);
+		
+		if (!Mouse.isButtonDown(LEFT_CLICK) && mouseWasDown) {
+			mouseWasDown = false;
+			return LEFT_CLICK;
+		} else if (Mouse.isButtonDown(LEFT_CLICK)) {
+			mouseWasDown = true;
+		}
+		
+		return NO_ACTION;
+	}
+	
+	private void updateRotation() {
+		pitch += -Mouse.getDY() * turnSpeed;
+		yaw += Mouse.getDX() * turnSpeed;
 	}
 	
 	public Vector3f getPosition() {

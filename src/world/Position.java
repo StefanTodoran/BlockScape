@@ -20,6 +20,18 @@ public final class Position {
         this.z = (int) vector.z;
     }
     
+    public void add(Position other) {
+    	this.x += other.x;
+    	this.y += other.y;
+    	this.z += other.z;
+    }
+
+    public void scale(float amount) {
+    	this.x *= amount;
+    	this.y *= amount;
+    	this.z *= amount;
+    }
+    
     public Vector3f toVector() {
     	return new Vector3f(x, y, z);
     }
