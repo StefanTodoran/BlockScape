@@ -42,6 +42,7 @@ public class Renderer {
 		createProjectMatrix(FOV); 
 		shader.start();
 		shader.loadProjectMatrix(projectMatrix);
+		shader.loadSkyColor(0, 0, 0);
 		shader.stop();
 	}
 	

@@ -9,6 +9,10 @@ public class Block {
 
 	private String type;
 	private boolean cull;
+	private int mesh;
+	
+	public static final int CUBE = 1;
+	public static final int CROSSES = 2;
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, Boolean> doCulling = new HashMap<String, Boolean>() {{
@@ -19,11 +23,25 @@ public class Block {
 		put("oak_log", true);
 		put("oak_leaves", false);
 		put("stone_block", true);
+		put("grass", false);
+	}};
+	
+	@SuppressWarnings("serial")
+	private static final Map<String, Integer> meshType = new HashMap<String, Integer>() {{
+		put("grass_block", CUBE);
+		put("gold_block", CUBE);
+		put("clay_block", CUBE);
+		put("soil_block", CUBE);
+		put("oak_log", CUBE);
+		put("oak_leaves", CUBE);
+		put("stone_block", CUBE);
+		put("grass", CROSSES);
 	}};
 	
 	public Block(String type) {
 		this.type = type;
 		this.cull = doCulling.get(type);
+		this.mesh = meshType.get(type);
 	}
 	
 	// Information about the all.png texture file.
@@ -42,6 +60,7 @@ public class Block {
 		put("oak_log", new Vector2f(2*tsx, 0));
 		put("oak_leaves", new Vector2f(2*tsx, tsy));
 		put("stone_block", new Vector2f(3*tsx, 0));
+		put("grass", new Vector2f(3*tsx, tsy));
 	}};
 	
 	public Vector2f[] getTextureCoords() {
@@ -57,7 +76,7 @@ public class Block {
 		float etx = stx + tsx;
 		float ety = sty + tsy;
 		
-		final Vector2f[] textureCoords = {
+		return new Vector2f[] {
 				// front or back (z sides)
 				new Vector2f(stx,hty),
 				new Vector2f(stx,ety),
@@ -82,8 +101,6 @@ public class Block {
 				new Vector2f(etx,ety),
 				new Vector2f(etx,hty),
 		};
-		
-		return textureCoords;
 	}
 
 	public String getType() {
@@ -94,4 +111,7 @@ public class Block {
 		return cull;
 	}
 
+	public int meshType() {
+		return mesh;
+	}
 }

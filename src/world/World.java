@@ -11,27 +11,29 @@ public class World {
 
 	private Map<Position, Chunk> chunks;
 	private long seed;
-	private int renderDistance = 8;
+	private int renderDistance = 32;
 	
 	public World(Loader loader, long seed) {
 		chunks = new HashMap<Position, Chunk>();
 		Random random = new Random(seed);
-		float[][] perlinNoise = PerlinNoise.generatePerlinNoise(16*Chunk.SIZE, 16*Chunk.SIZE, 6, 0.3f, seed);
+		float[][] perlinNoise = PerlinNoise.generatePerlinNoise(32*Chunk.SIZE, 32*Chunk.SIZE, 6, 0.3f, seed);
 		
-		for (int cx = 0; cx < 16; cx++) {
-			for (int cz = 0; cz < 16; cz++) {														
+		for (int cx = 0; cx < 32; cx++) {
+			for (int cz = 0; cz < 32; cz++) {														
 
 				Map<Position, Block> blocks = new HashMap<Position, Block>();
 				for (int x = 0; x < Chunk.SIZE; x++) {
 					for (int z = 0; z < Chunk.SIZE; z++) {
-						int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
-						Position pos = new Position(x, y, z);
+						float fy = perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * Chunk.SIZE;
+						int y = (int) fy;
 
-						blocks.put(pos, new Block("grass_block"));
+						blocks.put(new Position(x, y, z), new Block("grass_block"));
+//						if (fy - y < 0.4 && fy - y > 0.2) {
+//							blocks.put(new Position(x, y + 1, z), new Block("grass"));
+//						}
+						
 						for (y = y - 1; y >= 0; y--) {
-							pos = new Position(x, y, z);
-							
-							blocks.put(pos, new Block("stone_block"));
+							blocks.put(new Position(x, y, z), new Block("stone_block"));
 						}
 						
 					}
@@ -40,7 +42,7 @@ public class World {
 				for (int i = 0; i < random.nextFloat() * 3; i++) {
 					int x = (int) (random.nextFloat() * Chunk.SIZE);
 					int z = (int) (random.nextFloat() * Chunk.SIZE);
-					int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * 16);
+					int y = (int) (perlinNoise[cx*Chunk.SIZE + x][cz*Chunk.SIZE + z] * Chunk.SIZE);
 					
 					Position pos = new Position(x, y, z);
 					blocks.put(pos, new Block("soil_block"));
@@ -54,14 +56,14 @@ public class World {
 							}
 						}
 
-						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {				
+						if (dy + 1 < Math.min(y + 6, Chunk.SIZE)) {
 							pos = new Position(x, dy, z);
 							blocks.put(pos, new Block("oak_log"));
 						}
 					}
 				}
 				
-				Position chunkPos = new Position((cx - 8)*Chunk.SIZE, 0, (cz - 8)*Chunk.SIZE);
+				Position chunkPos = new Position((cx - 16)*Chunk.SIZE, 0, (cz - 16)*Chunk.SIZE);
 				Chunk chunk = new Chunk(new HashMap<Position, Block>(), chunkPos.toVector());
 				chunk.setBlocks(blocks);
 				chunks.put(chunkPos, chunk);
