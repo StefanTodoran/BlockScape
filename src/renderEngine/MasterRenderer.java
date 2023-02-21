@@ -23,7 +23,7 @@ public class MasterRenderer {
 	private Map<TexturedModel, List<Chunk>> chunks = new HashMap<TexturedModel, List<Chunk>>();
 	
 	public void render(Light sun, Camera camera) {
-		renderer.prepare();
+		renderer.prepare(camera.getFOV());
 		
 		shader.start();
 		shader.loadLight(sun);

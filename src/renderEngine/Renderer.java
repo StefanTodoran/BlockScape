@@ -21,7 +21,6 @@ import world.Entity;
 
 public class Renderer {
 	
-	private static final float FOV = 90;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 	
@@ -32,19 +31,18 @@ public class Renderer {
 		this.shader = shader;
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
-		createProjectMatrix(); 
-		// potentially move this so we can change FOV and other camera
-		// settings, and allow those settings to be in the camera
-		shader.start();
-		shader.loadProjectMatrix(projectMatrix);
-		shader.stop();
 	}
 
 	// Prepares OpenGL to render the game.
-	public void prepare() {
+	public void prepare(float FOV) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
+		
+		createProjectMatrix(FOV); 
+		shader.start();
+		shader.loadProjectMatrix(projectMatrix);
+		shader.stop();
 	}
 	
 	public void renderChunks(Map<TexturedModel, List<Chunk>> chunks) {
@@ -117,7 +115,7 @@ public class Renderer {
 		shader.loadTransformMatrix(transformMatrix);
 	}
 	
-	private void createProjectMatrix() {
+	private void createProjectMatrix(float FOV) {
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
 		float yScale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float xScale = yScale / aspectRatio;

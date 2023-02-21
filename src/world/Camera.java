@@ -11,11 +11,18 @@ public class Camera {
 	
 	private float moveSpeed = 0.1f;
 	private float velFalloff = 0.96f;
-	private float turnSpeed = 0.1f; // TODO: make a setting for this
+	private float sensitivity = 0.1f;
+
+	private float baseSensitivity = 0.1f; // TODO: Make this a setting!
+	private static final float ZOOM_SENS_DAMPER = 0.2f;
 	
 	private float pitch; // up down rotation, or x rotation
 	private float yaw; // left right rotation, or y rotation
 	private float roll; // tilt of camera, or z rotation
+	private float FOV = NORMAL_FOV;
+
+	private static final float NORMAL_FOV = 90;
+	private static final float ZOOMED_FOV = 30;
 	
 	public Camera(Vector3f position, Vector3f velocity) {
 		super();
@@ -37,6 +44,14 @@ public class Camera {
 	private boolean mouseWasDown = false;
 	
 	public int doUpdateGetActions() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+			FOV = ZOOMED_FOV;
+			sensitivity = baseSensitivity * ZOOM_SENS_DAMPER;
+		} else {
+			FOV = NORMAL_FOV;
+			sensitivity = baseSensitivity;			
+		}
+		
 		updateRotation();
 		
 		float curMoveSpeed = moveSpeed;
@@ -91,8 +106,8 @@ public class Camera {
 	}
 	
 	private void updateRotation() {
-		pitch += -Mouse.getDY() * turnSpeed;
-		yaw += Mouse.getDX() * turnSpeed;
+		pitch += -Mouse.getDY() * sensitivity;
+		yaw += Mouse.getDX() * sensitivity;
 	}
 	
 	public Vector3f getPosition() {
@@ -109,6 +124,10 @@ public class Camera {
 	
 	public float getRoll() {
 		return roll;
+	}
+
+	public float getFOV() {
+		return FOV;
 	}
 
 }
