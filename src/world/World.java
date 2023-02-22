@@ -11,7 +11,7 @@ public class World {
 
 	private Map<Position, Chunk> chunks;
 	private long seed;
-	private int renderDistance = 32;
+	private int renderDistance = 16;
 	
 	public World(Loader loader, long seed) {
 		chunks = new HashMap<Position, Chunk>();
@@ -63,9 +63,9 @@ public class World {
 					}
 				}
 				
-				Position chunkPos = new Position((cx - 16)*Chunk.SIZE, 0, (cz - 16)*Chunk.SIZE);
+				Position chunkPos = new Position((cx - 16), 0, (cz - 16));
 				Chunk chunk = new Chunk(new HashMap<Position, Block>(), chunkPos.toVector());
-				chunk.setBlocks(blocks);
+				chunk.setAllBlocks(blocks);
 				chunks.put(chunkPos, chunk);
 				chunk.updateMesh(loader);
 			}
@@ -79,9 +79,8 @@ public class World {
 		for (int x = -dist; x < dist; x++) {
 			for (int y = -dist; y < dist; y++) {
 				for (int z = -dist; z < dist; z++) {
-					Position pos = new Position(x * Chunk.SIZE, y * Chunk.SIZE, z * Chunk.SIZE);
+					Position pos = new Position(x , y, z);
 					Position adj = Chunk.worldPosToChunkCoords(center);
-					adj.scale(Chunk.SIZE);
 					pos.add(adj);
 					
 					Chunk chunk = chunks.get(pos);
@@ -92,13 +91,21 @@ public class World {
 			}
 		}
 		
-		// I think this is worse?
-//		for (Position pos : chunks.keySet()) {
-//			if (pos.withinDistance(center, renderDistance * Chunk.SIZE)) {
-//				nearby.put(pos, chunks.get(pos));
-//			}
-//		}
 		return nearby;
+	}
+	
+	public Chunk setBlock(Position blockPos, String blockType) {
+		Position chunkPos = Chunk.worldPosToChunkCoords(blockPos);
+		
+		Chunk chunk = chunks.get(chunkPos);
+		if (chunk != null) {
+			blockPos = Chunk.worldPosToLocalCoords(blockPos);
+			Block block = new Block(blockType);
+			chunk.setBlock(blockPos, block);		
+			return chunk;
+		} else {
+			return null;
+		}
 	}
 
 	public int getRenderDistance() {

@@ -21,8 +21,11 @@ public class Chunk {
 	// String of the form "x,y,z" specified as integers.
 	private Map<Position, Block> blocks;
 	private boolean[][][] occupied;
+	
 	private TexturedModel tModel;
-	private Vector3f position;
+
+	private Vector3f worldCoords;
+	private Vector3f chunkCoords;
 	
 	private static final Vector3f[] vertVectors = {
 			new Vector3f(-0.5f,0.5f,-0.5f),
@@ -87,9 +90,10 @@ public class Chunk {
 			new Vector3f(0, -1, 0),
 	};
 	
-	public Chunk(Map<Position, Block> blocks, Vector3f position) {
+	public Chunk(Map<Position, Block> blocks, Vector3f chunkPosition) {
 		this.blocks = blocks;
-		this.position = position;
+		this.chunkCoords = chunkPosition;
+		this.worldCoords = Position.scaleVector(chunkPosition, Chunk.SIZE);
 	}
 	
 	public void updateMesh(Loader loader) {
@@ -197,7 +201,14 @@ public class Chunk {
 			normalsArray[i++] = normal.z;
 		}
 		
-		RawModel rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
+		RawModel rModel;
+		if (this.tModel == null) {
+			rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);			
+		} else {
+			int vaoID = tModel.getRawModel().getVaoID();
+			rModel = loader.updateVAO(vaoID, verticesArray, texturesArray, normalsArray, indicesArray);
+		}
+		
 		if (TEXTURE == null) {
 			TEXTURE = new ModelTexture(loader.loadTexture("all"));
 		}
@@ -360,15 +371,27 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 	// ===================== \\
 	
 	public static Position worldPosToChunkCoords(int x, int y, int z) {
-		return new Position(x / SIZE, y / SIZE, z / SIZE);
+		int cx = x / SIZE;
+		if (x < 0) { cx -= 1; }
+		int cy = y / SIZE;
+		int cz = z / SIZE;
+		if (z < 0) { cz -= 1; }
+		return new Position(cx, cy, cz);
 	}
 
 	public static Position worldPosToChunkCoords(Position wp) {
-		return new Position(wp.x / SIZE, wp.y / SIZE, wp.z / SIZE);
+		return worldPosToChunkCoords(wp.x, wp.y, wp.z);
 	}
 
-	public static Position worldPosToChunkPos(int x, int y, int z) {
-		return new Position(x % SIZE, y % SIZE, z % SIZE);
+	public static Position worldPosToLocalCoords(int x, int y, int z) {
+		int lx = (x >= 0) ? x % SIZE: SIZE + (x % SIZE);
+		int ly = (y >= 0) ? y % SIZE: SIZE + (y % SIZE);
+		int lz = (z >= 0) ? z % SIZE: SIZE + (z % SIZE);
+		return new Position(lx, ly, lz);
+	}
+
+	public static Position worldPosToLocalCoords(Position wp) {
+		return worldPosToLocalCoords(wp.x, wp.y, wp.z);
 	}
 	
 	// GETTERS AND SETTERS \\
@@ -378,15 +401,23 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		return tModel;
 	}
 	
-	public Vector3f getPosition() {
-		return position;
+	public Vector3f getChunkPosition() {
+		return chunkCoords;
+	}
+	
+	public Vector3f getWorldPosition() {
+		return worldCoords;
 	}
 
 	public Map<Position, Block> getBlocks() {
 		return blocks;
 	}
 	
-	public void setBlocks(Map<Position, Block> newBlocks) {
+	public void setBlock(Position pos, Block block) {
+		blocks.put(pos, block);
+	}
+	
+	public void setAllBlocks(Map<Position, Block> newBlocks) {
 		this.blocks = newBlocks;
 	}
 

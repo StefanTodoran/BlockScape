@@ -41,15 +41,15 @@ public class Loader {
 		return new RawModel(vaoID, screenCoords.length);
 	}
 	
-//	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, int[] indices) {
-//		GL30.glBindVertexArray(vaoID);
-//		bindIndicesBuffer(indices);
-//		storeDataInAttributeList(0, 3, positions);
-//		storeDataInAttributeList(1, 2, textureCoords);
-//		storeDataInAttributeList(2, 3, normals);
-//		unbindVAO();
-//		return new RawModel(vaoID, indices.length);
-//	}
+	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, int[] indices) {
+		GL30.glBindVertexArray(vaoID);
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0, 3, positions);
+		storeDataInAttributeList(1, 2, textureCoords);
+		storeDataInAttributeList(2, 3, normals);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
+	}
 	
 	public int loadTexture(String fileName) {
 		Texture texture = null;
@@ -90,7 +90,7 @@ public class Loader {
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
 		FloatBuffer buffer = storeDataInFloatBuffer(data);
-		// May need to replace GL_STATIC_DRAW to be able to update VBOs
+		// May need to replace GL_STATIC_DRAW to be able to update VBOs?
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(attributeNumber, coordSize, GL11.GL_FLOAT, false, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);

@@ -37,6 +37,14 @@ public class MainGameLoop {
 			int action = camera.doUpdateGetActions();
 			Vector3f camPos = camera.getPosition();
 			light.setPosition(camPos);
+
+			Chunk updated = null;
+			if (action == Camera.LEFT_CLICK) {
+				updated = world.setBlock(new Position(camPos), "gold_block");
+			}
+			if (updated != null) {
+				updated.updateMesh(loader);
+			}
 			
 			Map<Position, Chunk> chunks = world.getChunksAround(new Position(camPos));
 			

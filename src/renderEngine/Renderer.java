@@ -112,7 +112,7 @@ public class Renderer {
 	}
 
 	private void prepareInstance(Chunk chunk) {		
-		Matrix4f transformMatrix = Maths.createTranslationMatrix(chunk.getPosition());
+		Matrix4f transformMatrix = Maths.createTranslationMatrix(chunk.getWorldPosition());
 		shader.loadTransformMatrix(transformMatrix);
 	}
 	

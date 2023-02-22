@@ -43,4 +43,5 @@ void main(void) {
 	outColor = textureColor;
 	
 	outColor = mix(vec4(skyColor, 1.0), outColor, fogFadeAmnt);
+	
 }

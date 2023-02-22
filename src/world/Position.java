@@ -14,22 +14,42 @@ public final class Position {
         this.z = z;
     }
     
+    public Position(Position other){
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+    }
+    
     public Position(Vector3f vector){
         this.x = (int) vector.x;
         this.y = (int) vector.y;
         this.z = (int) vector.z;
     }
     
-    public void add(Position other) {
+    public Position add(Position other) {
     	this.x += other.x;
     	this.y += other.y;
     	this.z += other.z;
+    	return this;
+    }
+    
+    public Position sub(Position other) {
+    	this.x -= other.x;
+    	this.y -= other.y;
+    	this.z -= other.z;
+    	return this;
     }
 
-    public void scale(float amount) {
+    public Position scale(float amount) {
     	this.x *= amount;
     	this.y *= amount;
     	this.z *= amount;
+    	return this;
+    }
+    
+    // Why tf does LWJGL not have a built in Vector3f scale??
+    public static Vector3f scaleVector(Vector3f vector, float amount) {
+    	return new Vector3f(vector.x * amount, vector.y * amount, vector.z * amount);
     }
     
     public Vector3f toVector() {
