@@ -9,6 +9,7 @@ public class Block {
 
 	private String type;
 	private boolean cull;
+	private boolean shiny;
 	private int mesh;
 	
 	public static final int CUBE = 1;
@@ -27,6 +28,18 @@ public class Block {
 	}};
 	
 	@SuppressWarnings("serial")
+	private static final Map<String, Boolean> isShiny = new HashMap<String, Boolean>() {{
+		put("grass_block", false);
+		put("gold_block", true);
+		put("clay_block", false);
+		put("soil_block", false);
+		put("oak_log", false);
+		put("oak_leaves", false);
+		put("stone_block", false);
+		put("grass", false);
+	}};
+	
+	@SuppressWarnings("serial")
 	private static final Map<String, Integer> meshType = new HashMap<String, Integer>() {{
 		put("grass_block", CUBE);
 		put("gold_block", CUBE);
@@ -41,6 +54,7 @@ public class Block {
 	public Block(String type) {
 		this.type = type;
 		this.cull = doCulling.get(type);
+		this.shiny = isShiny.get(type);
 		this.mesh = meshType.get(type);
 	}
 	
@@ -109,6 +123,10 @@ public class Block {
 	
 	public boolean doCulling() {
 		return cull;
+	}
+	
+	public boolean isShiny() {
+		return shiny;
 	}
 
 	public int meshType() {

@@ -1,6 +1,7 @@
 package world;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -104,11 +105,13 @@ public class Chunk {
 		List<Vector3f> vertices = new ArrayList<Vector3f>();
 		List<Vector2f> textures = new ArrayList<Vector2f>();
 		List<Vector3f> normals = new ArrayList<Vector3f>();
+		List<Integer> shines = new ArrayList<Integer>();
 		List<Integer> indices = new ArrayList<Integer>();
 		
 		float[] verticesArray = null;
 		float[] normalsArray = null;
 		float[] texturesArray = null;
+		float[] shinesArray = null;
 		int[] indicesArray = null;
 		
 		boolean[][][] culls = new boolean[SIZE][SIZE][SIZE];
@@ -142,26 +145,32 @@ public class Chunk {
 						// to know if we need those faces in our mesh or not.
 						if (z-1 < 0 || !cullsFaces(x, y, z-1, culls) || !block.doCulling()) {
 							addFrontFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						if (z+1 >= SIZE || !cullsFaces(x, y, z+1, culls) || !block.doCulling()) {
 							addBackFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						if (x+1 >= SIZE || !cullsFaces(x+1, y, z, culls) || !block.doCulling()) {
 							addLeftFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						if (x-1 < 0 || !cullsFaces(x-1, y, z, culls) || !block.doCulling()) {
 							addRightFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						if (y+1 >= SIZE || !cullsFaces(x, y+1, z, culls) || !block.doCulling()) {
 							addTopFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						if (y-1 < 0 || !cullsFaces(x, y-1, z, culls) || !block.doCulling()) {
 							addBottomFace(vertIndex, posVect, vertices, indices, textures, normals, textureCoords);
+							addFaceShine(block, shines);
 							vertIndex += 4;
 						}
 						
@@ -201,12 +210,17 @@ public class Chunk {
 			normalsArray[i++] = normal.z;
 		}
 		
+		shinesArray = new float[shines.size()];
+		for (i = 0; i < shines.size(); i++) {
+			shinesArray[i] = shines.get(i);
+		}
+		
 		RawModel rModel;
 		if (this.tModel == null) {
-			rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);			
+			rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);			
 		} else {
 			int vaoID = tModel.getRawModel().getVaoID();
-			rModel = loader.updateVAO(vaoID, verticesArray, texturesArray, normalsArray, indicesArray);
+			rModel = loader.updateVAO(vaoID, verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);
 		}
 		
 		if (TEXTURE == null) {
@@ -235,7 +249,6 @@ public class Chunk {
 		indices.add(vi); // 0
 		indices.add(vi+3); // 3
 		
-		// Will need to do some kind of block based offset
 		textures.add(textureCoords[0]);
 		textures.add(textureCoords[1]);
 		textures.add(textureCoords[2]);
@@ -365,6 +378,16 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		normals.add(normVectors[21]);
 		normals.add(normVectors[22]);
 		normals.add(normVectors[23]);
+	}
+	
+	private void addFaceShine(Block block, List<Integer> shines) {
+		// Shine is set for each vertex to a boolean 0 or 1 value, indicating whether 
+		// that vertex is part of a shiny/reflective block. All vertices in a block will
+		// either have reflectivity 0 or 1.
+		
+		for (int i = 0; i < 4; i++) {
+			shines.add(block.isShiny() ? 1 : 0);
+		}
 	}
 	
 	// OTHER CHUNK FUNCTIONS \\

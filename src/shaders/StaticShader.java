@@ -41,8 +41,8 @@ public class StaticShader extends ShaderProgram {
 
 		locLightPos = super.getUniformLocation("lightPosition");
 		locLightColor = super.getUniformLocation("lightColor");
-		locShineDamper = super.getUniformLocation("shineDamper");
-		locReflectivity = super.getUniformLocation("reflectivity");
+//		locShineDamper = super.getUniformLocation("shineDamper");
+//		locReflectivity = super.getUniformLocation("reflectivity");
 		locSkyColor = super.getUniformLocation("skyColor");
 	}
 	
@@ -64,10 +64,10 @@ public class StaticShader extends ShaderProgram {
 		super.loadVector(locLightColor, light.getColor());
 	}
 	
-	public void loadShineVariables(float damper, float reflectivity) {
-		super.loadFloat(locShineDamper, damper);
-		super.loadFloat(locReflectivity, reflectivity);
-	}
+//	public void loadShineVariables(float damper, float reflectivity) {
+//		super.loadFloat(locShineDamper, damper);
+//		super.loadFloat(locReflectivity, reflectivity);
+//	}
 	
 	public void loadSkyColor(float r, float g, float b) {
 		super.loadVector(locSkyColor, new Vector3f(r, g, b));

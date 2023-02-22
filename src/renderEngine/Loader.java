@@ -24,12 +24,13 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
+		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
 	}
@@ -41,12 +42,13 @@ public class Loader {
 		return new RawModel(vaoID, screenCoords.length);
 	}
 	
-	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, int[] indices) {
+	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
 		GL30.glBindVertexArray(vaoID);
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
+		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
 	}
