@@ -30,14 +30,25 @@ public class MainGameLoop {
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 		Camera camera = new Camera(new Vector3f(0, 20, 0), new Vector3f(0, 0, 0));
 		
+		float lastTick = 0;
 		boolean closeRequested = false;
 		while (!closeRequested) {
 			
 			// GAME LOGIC
-			int action = camera.doUpdateGetActions();
+			float delta = DisplayManager.getFrameTimeMS();
+			lastTick += delta;
+			
+			int action = Camera.NO_ACTION;
+			while (lastTick > 100) {
+				lastTick -= 10;
+
+				int action_ = camera.doUpdateGetActions();
+				action = action_ != Camera.NO_ACTION ? action_ : action;
+			}
+			
 			Vector3f camPos = camera.getPosition();
 			light.setPosition(camPos);
-
+			
 			Chunk updated = null;
 			if (action == Camera.LEFT_CLICK) {
 				updated = world.setBlock(new Position(camPos), "gold_block");

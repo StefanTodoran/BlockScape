@@ -56,32 +56,26 @@ public class Camera {
 		
 		float curMoveSpeed = moveSpeed;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-			curMoveSpeed = moveSpeed * 2;
+			curMoveSpeed *= 2;
 		}
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			// position.z -= curMoveSpeed;
 			velocity.z = -1 * curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			// position.x -= curMoveSpeed;
 			velocity.x = -1 * curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			// position.z += curMoveSpeed;
 			velocity.z = curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			// position.x += curMoveSpeed;
 			velocity.x = curMoveSpeed;
 		}
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-			// position.y += curMoveSpeed;
 			velocity.y = curMoveSpeed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			// position.y -= curMoveSpeed;
 			velocity.y = -1 * curMoveSpeed;
 		}
 		
@@ -90,9 +84,7 @@ public class Camera {
 		dx += (float) (velocity.x * Math.cos(Math.toRadians(yaw)));
 		dz += (float) (velocity.x * Math.sin(Math.toRadians(yaw)));
 		
-		Vector3f.add(position, new Vector3f(dx, 0, dz), position);
-		Vector3f.add(position, new Vector3f(0, velocity.y, 0), position);
-		
+		Vector3f.add(position, new Vector3f(dx, velocity.y, dz), position);
 		velocity.scale(velFalloff);
 		
 		if (!Mouse.isButtonDown(LEFT_CLICK) && mouseWasDown) {

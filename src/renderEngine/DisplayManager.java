@@ -1,6 +1,7 @@
 package renderEngine;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
@@ -14,6 +15,9 @@ public class DisplayManager {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	private static final int FPS_CAP = 120;
+	
+	private static long lastFrameTime;
+	private static long delta;
 
 	public static void createDisplay() {
 		ContextAttribs attribs = new ContextAttribs(3,2)
@@ -30,12 +34,17 @@ public class DisplayManager {
 		}
 		
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+		lastFrameTime = Sys.getTime();
 		Mouse.setGrabbed(true);
 	}
 	
 	public static boolean updateDisplay() {
 		Display.sync(FPS_CAP);
 		Display.update();
+		
+		long currentTime = Sys.getTime();
+		delta = currentTime - lastFrameTime;
+		lastFrameTime = currentTime;
 		
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
@@ -53,6 +62,10 @@ public class DisplayManager {
 			}
 		}
 		return false;
+	}
+	
+	public static float getFrameTimeMS() {
+		return delta;
 	}
 	
 	public static void closeDisplay() {

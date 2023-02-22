@@ -11,8 +11,6 @@ out vec4 outColor;
 
 uniform sampler2D textureSampler;
 uniform vec3 lightColor;
-// uniform float shineDamper;
-// uniform float reflectivity;
 uniform vec3 skyColor;
 
 const float shineDamper = 15;

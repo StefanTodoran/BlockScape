@@ -14,7 +14,6 @@ import models.RawModel;
 import models.Reticle;
 import models.TexturedModel;
 import shaders.StaticShader;
-import textures.ModelTexture;
 import toolbox.Maths;
 import world.Chunk;
 import world.Entity;
@@ -91,9 +90,6 @@ public class Renderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		GL20.glEnableVertexAttribArray(3);
-		
-//		ModelTexture texture = tModel.getTexture();
-//		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tModel.getTexture().getID());
