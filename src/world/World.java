@@ -11,7 +11,7 @@ public class World {
 
 	private Map<Position, Chunk> chunks;
 	private long seed;
-	private int renderDistance = 16;
+	private int renderDistance = 12;
 	
 	public World(Loader loader, long seed) {
 		chunks = new HashMap<Position, Chunk>();
@@ -19,7 +19,7 @@ public class World {
 		float[][] perlinNoise = PerlinNoise.generatePerlinNoise(32*Chunk.SIZE, 32*Chunk.SIZE, 6, 0.3f, seed);
 		
 		for (int cx = 0; cx < 32; cx++) {
-			for (int cz = 0; cz < 32; cz++) {														
+			for (int cz = 0; cz < 32; cz++) {						
 
 				Map<Position, Block> blocks = new HashMap<Position, Block>();
 				for (int x = 0; x < Chunk.SIZE; x++) {
@@ -75,7 +75,7 @@ public class World {
 	public Map<Position, Chunk> getChunksAround(Position center) {
 		Map<Position, Chunk> nearby = new HashMap<Position, Chunk>();
 		
-		int dist = renderDistance / 2;
+		int dist = renderDistance;
 		for (int x = -dist; x < dist; x++) {
 			for (int y = -dist; y < dist; y++) {
 				for (int z = -dist; z < dist; z++) {

@@ -27,13 +27,24 @@ public class Loader {
 
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
 		int vaoID = createVAO();
-//		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
 		return new RawModel(vaoID, positions.length / 3);
+	}
+	
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0, 3, positions);
+		storeDataInAttributeList(1, 2, textureCoords);
+		storeDataInAttributeList(2, 3, normals);
+		storeDataInAttributeList(3, 1, shineVals);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
+//		return new RawModel(vaoID, positions.length / 3);
 	}
 	
 	public RawModel loadToVAO(float[] screenCoords) {
@@ -45,14 +56,24 @@ public class Loader {
 	
 	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
 		GL30.glBindVertexArray(vaoID);
-//		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
-//		return new RawModel(vaoID, indices.length);
 		return new RawModel(vaoID, positions.length / 3);
+	}
+	
+	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+		GL30.glBindVertexArray(vaoID);
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0, 3, positions);
+		storeDataInAttributeList(1, 2, textureCoords);
+		storeDataInAttributeList(2, 3, normals);
+		storeDataInAttributeList(3, 1, shineVals);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
+//		return new RawModel(vaoID, positions.length / 3);
 	}
 	
 	public int loadTexture(String fileName) {

@@ -30,6 +30,9 @@ public class MainGameLoop {
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 		Camera camera = new Camera(new Vector3f(0, 20, 0), new Vector3f(0, 0, 0));
 		
+		int frames = 0;
+		float time = 0;
+		
 		float lastTick = 0;
 		boolean closeRequested = false;
 		while (!closeRequested) {
@@ -37,6 +40,14 @@ public class MainGameLoop {
 			// GAME LOGIC
 			float delta = DisplayManager.getFrameTimeMS();
 			lastTick += delta;
+			
+			time += delta;
+			frames += 1;
+			if (time > 1000) {
+				System.out.println(frames);
+				frames = 0;
+				time = 0;
+			}
 			
 			int action = Camera.NO_ACTION;
 			while (lastTick > 100) {
