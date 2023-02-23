@@ -31,10 +31,14 @@ void main(void) {
 	
 	float light = dot(unitNormal, unitLight);
 	float brightness = max(light, 0.01);
+	vec3 diffuse = brightness * lightColor;
 	// vec3 diffuse = brightness * lightColor / lightDist;
-	vec3 diffuse = lightColor / lightDist;
+	// vec3 diffuse = lightColor / lightDist;
 	
-	outColor = vec4(diffuse, 1) * textureColor;
+	// outColor = textureColor;
+	// outColor = vec4(diffuse, 1.0) * textureColor;
+	outColor = mix(1 - vec4(diffuse, 1.0), textureColor, 0.9);
+	
 	if (reflectAmnt > 0.5) {	
 		vec3 unitCamera = normalize(toCameraVector);
 		vec3 reflectedLight = reflect(-unitLight, unitNormal);

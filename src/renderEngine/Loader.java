@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -24,33 +25,34 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
 		int vaoID = createVAO();
-		bindIndicesBuffer(indices);
+//		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
-		return new RawModel(vaoID, indices.length);
+		return new RawModel(vaoID, positions.length / 3);
 	}
 	
 	public RawModel loadToVAO(float[] screenCoords) {
 		int vaoID = createVAO();
 		storeDataInAttributeList(0, 2, screenCoords);
 		unbindVAO();
-		return new RawModel(vaoID, screenCoords.length);
+		return new RawModel(vaoID, screenCoords.length / 2);
 	}
 	
-	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
 		GL30.glBindVertexArray(vaoID);
-		bindIndicesBuffer(indices);
+//		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
-		return new RawModel(vaoID, indices.length);
+//		return new RawModel(vaoID, indices.length);
+		return new RawModel(vaoID, positions.length / 3);
 	}
 	
 	public int loadTexture(String fileName) {
@@ -58,6 +60,9 @@ public class Loader {
 		try {
 			String path = "textures/" + fileName + ".png";
 			texture = TextureLoader.getTexture("PNG", new FileInputStream(path), GL11.GL_NEAREST);
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+//			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+//			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

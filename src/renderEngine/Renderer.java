@@ -52,24 +52,25 @@ public class Renderer {
 			
 			for (Chunk chunk : batch) {
 				prepareInstance(chunk);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+//				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+				GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getRawModel().getVertexCount());
 			}
 			unbindTexturedModel();
 		}
 	}
 
-	public void renderEntities(Map<TexturedModel, List<Entity>> entities) {
-		for (TexturedModel model : entities.keySet()) {
-			prepareTexturedModel(model);
-			List<Entity> batch = entities.get(model);
-			
-			for (Entity entity : batch) {
-				prepareInstance(entity);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-			}
-			unbindTexturedModel();
-		}
-	}
+//	public void renderEntities(Map<TexturedModel, List<Entity>> entities) {
+//		for (TexturedModel model : entities.keySet()) {
+//			prepareTexturedModel(model);
+//			List<Entity> batch = entities.get(model);
+//			
+//			for (Entity entity : batch) {
+//				prepareInstance(entity);
+//				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+//			}
+//			unbindTexturedModel();
+//		}
+//	}
 	
 	public void renderReticle() {
 		RawModel model = Reticle.getModel();
