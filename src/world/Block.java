@@ -24,7 +24,7 @@ public class Block {
 		put("oak_log", true);
 		put("oak_leaves", false);
 		put("stone_block", true);
-		put("grass", false);
+		put("buried_oil", true);
 	}};
 	
 	@SuppressWarnings("serial")
@@ -36,7 +36,7 @@ public class Block {
 		put("oak_log", false);
 		put("oak_leaves", false);
 		put("stone_block", false);
-		put("grass", false);
+		put("buried_oil", false);
 	}};
 	
 	@SuppressWarnings("serial")
@@ -48,7 +48,7 @@ public class Block {
 		put("oak_log", CUBE);
 		put("oak_leaves", CUBE);
 		put("stone_block", CUBE);
-		put("grass", CROSSES);
+		put("buried_oil", CUBE);
 	}};
 	
 	public Block(String type) {
@@ -74,7 +74,7 @@ public class Block {
 		put("oak_log", new Vector2f(2*tsx, 0));
 		put("oak_leaves", new Vector2f(2*tsx, tsy));
 		put("stone_block", new Vector2f(3*tsx, 0));
-		put("grass", new Vector2f(3*tsx, tsy));
+		put("buried_oil", new Vector2f(3*tsx, tsy));
 	}};
 	
 	public Vector2f[] getTextureCoords() {

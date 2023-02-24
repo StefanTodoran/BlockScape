@@ -63,11 +63,21 @@ public class MainGameLoop {
 			
 			time += delta;
 			frames += 1;
-			if (time >= 1000) {
-				fps = FontEngine.buildElementsFromString(frames+" FPS", fpsPos, 2, false);
+			if (frames >= 5) {
+				int estimate = (int) (1000 / time) * frames;
+				
+				fps = FontEngine.buildElementsFromString(estimate+" FPS", fpsPos, 2, false);
 				frames = 0;
 				time = 0;
 			}
+			
+//			time += delta;
+//			frames += 1;
+//			if (time >= 1000) {
+//				fps = FontEngine.buildElementsFromString(frames+" FPS", fpsPos, 2, false);
+//				frames = 0;
+//				time = 0;
+//			}
 						
 			int action = Camera.NO_ACTION;
 			while (lastTick > 100) {

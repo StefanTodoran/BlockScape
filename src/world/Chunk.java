@@ -60,33 +60,10 @@ public class Chunk {
 	};
 	private static final Vector3f[] normVectors = {
 			new Vector3f(0, 0, -1),
-			new Vector3f(0, 0, -1),
-			new Vector3f(0, 0, -1),
-			new Vector3f(0, 0, -1),
-			
 			new Vector3f(0, 0, 1),
-			new Vector3f(0, 0, 1),
-			new Vector3f(0, 0, 1),
-			new Vector3f(0, 0, 1),
-
 			new Vector3f(1, 0, 0),
-			new Vector3f(1, 0, 0),
-			new Vector3f(1, 0, 0),
-			new Vector3f(1, 0, 0),
-
 			new Vector3f(-1, 0, 0),
-			new Vector3f(-1, 0, 0),
-			new Vector3f(-1, 0, 0),
-			new Vector3f(-1, 0, 0),
-
 			new Vector3f(0, 1, 0),
-			new Vector3f(0, 1, 0),
-			new Vector3f(0, 1, 0),
-			new Vector3f(0, 1, 0),
-
-			new Vector3f(0, -1, 0),
-			new Vector3f(0, -1, 0),
-			new Vector3f(0, -1, 0),
 			new Vector3f(0, -1, 0),
 	};
 	
@@ -255,10 +232,7 @@ public class Chunk {
 		textures.add(textureCoords[2]);
 		textures.add(textureCoords[3]);
 
-		normals.add(normVectors[0]);
-		normals.add(normVectors[1]);
-		normals.add(normVectors[2]);
-		normals.add(normVectors[3]);
+		addFaceNorms(normals, 0);
 	}
 	
 	private void addBackFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
@@ -279,10 +253,7 @@ public class Chunk {
 		textures.add(textureCoords[2]);
 		textures.add(textureCoords[3]);
 
-		normals.add(normVectors[4]);
-		normals.add(normVectors[5]);
-		normals.add(normVectors[6]);
-		normals.add(normVectors[7]);
+		addFaceNorms(normals, 1);
 	}
 
 	private void addLeftFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
@@ -303,14 +274,11 @@ public class Chunk {
 		textures.add(textureCoords[6]);
 		textures.add(textureCoords[7]);
 
-		normals.add(normVectors[8]);
-		normals.add(normVectors[9]);
-		normals.add(normVectors[10]);
-		normals.add(normVectors[11]);
+		addFaceNorms(normals, 2);
 	}
 
 	private void addRightFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
-List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
+			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[12], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[13], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[14], offset, new Vector3f(0, 0, 0)));
@@ -327,14 +295,11 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		textures.add(textureCoords[6]);
 		textures.add(textureCoords[7]);
 
-		normals.add(normVectors[12]);
-		normals.add(normVectors[13]);
-		normals.add(normVectors[14]);
-		normals.add(normVectors[15]);
+		addFaceNorms(normals, 3);
 	}
 
 	private void addTopFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
-List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
+			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[16], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[17], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[18], offset, new Vector3f(0, 0, 0)));
@@ -351,14 +316,11 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		textures.add(textureCoords[10]);
 		textures.add(textureCoords[11]);
 
-		normals.add(normVectors[16]);
-		normals.add(normVectors[17]);
-		normals.add(normVectors[18]);
-		normals.add(normVectors[19]);
+		addFaceNorms(normals, 4);
 	}
 
 	private void addBottomFace(Integer vi, Vector3f offset, List<Vector3f> vertices, List<Integer> indices, 
-List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
+			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		vertices.add(Vector3f.add(vertVectors[20], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[21], offset, new Vector3f(0, 0, 0)));
 		vertices.add(Vector3f.add(vertVectors[22], offset, new Vector3f(0, 0, 0)));
@@ -375,157 +337,14 @@ List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
 		textures.add(textureCoords[14]);
 		textures.add(textureCoords[15]);
 
-		normals.add(normVectors[20]);
-		normals.add(normVectors[21]);
-		normals.add(normVectors[22]);
-		normals.add(normVectors[23]);
+		addFaceNorms(normals, 5);
 	}
 	
-	/*
-	private void addFrontFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[3], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[2], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[1], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[1], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[0], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[3], offset, new Vector3f(0, 0, 0)));
-		
-		textures.add(textureCoords[3]);
-		textures.add(textureCoords[2]);
-		textures.add(textureCoords[1]);
-		textures.add(textureCoords[1]);
-		textures.add(textureCoords[0]);
-		textures.add(textureCoords[3]);
-		
-		normals.add(normVectors[3]);
-		normals.add(normVectors[2]);
-		normals.add(normVectors[1]);
-		normals.add(normVectors[1]);
-		normals.add(normVectors[0]);
-		normals.add(normVectors[3]);
+	private void addFaceNorms(List<Vector3f> normals, int index) {
+		for (int i = 0; i < 4; i++) {
+			normals.add(normVectors[index]);
+		}
 	}
-
-	private void addBackFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[4], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[5], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[7], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[7], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[5], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[6], offset, new Vector3f(0, 0, 0)));
-
-		textures.add(textureCoords[0]); // 4
-		textures.add(textureCoords[1]); // 5
-		textures.add(textureCoords[3]); // 7
-		textures.add(textureCoords[3]); // 7
-		textures.add(textureCoords[1]); // 5
-		textures.add(textureCoords[2]); // 6
-
-		normals.add(normVectors[4]);
-		normals.add(normVectors[5]);
-		normals.add(normVectors[7]);
-		normals.add(normVectors[7]);
-		normals.add(normVectors[5]);
-		normals.add(normVectors[6]);
-	}
-
-	private void addLeftFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[8], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[11], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[9], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[11], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[10], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[9], offset, new Vector3f(0, 0, 0)));
-		
-		textures.add(textureCoords[4]); // 8
-		textures.add(textureCoords[7]); // 11
-		textures.add(textureCoords[5]); // 9
-		textures.add(textureCoords[7]); // 11
-		textures.add(textureCoords[6]); // 10
-		textures.add(textureCoords[5]); // 9
-
-		normals.add(normVectors[8]);
-		normals.add(normVectors[11]);
-		normals.add(normVectors[9]);
-		normals.add(normVectors[11]);
-		normals.add(normVectors[10]);
-		normals.add(normVectors[9]);
-	}
-
-	private void addRightFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[12], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[13], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[15], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[15], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[13], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[14], offset, new Vector3f(0, 0, 0)));
-		
-		textures.add(textureCoords[4]); // 12
-		textures.add(textureCoords[5]); // 13
-		textures.add(textureCoords[7]); // 15
-		textures.add(textureCoords[7]); // 15
-		textures.add(textureCoords[5]); // 13
-		textures.add(textureCoords[6]); // 14
-
-		normals.add(normVectors[12]);
-		normals.add(normVectors[13]);
-		normals.add(normVectors[15]);
-		normals.add(normVectors[15]);
-		normals.add(normVectors[13]);
-		normals.add(normVectors[14]);
-	}
-
-	private void addTopFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[16], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[19], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[17], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[19], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[18], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[17], offset, new Vector3f(0, 0, 0)));
-		
-		textures.add(textureCoords[8]); // 16
-		textures.add(textureCoords[11]); // 19
-		textures.add(textureCoords[9]); // 17
-		textures.add(textureCoords[11]); // 19
-		textures.add(textureCoords[10]); // 18
-		textures.add(textureCoords[9]); // 17
-		
-		normals.add(normVectors[16]);
-		normals.add(normVectors[19]);
-		normals.add(normVectors[17]);
-		normals.add(normVectors[19]);
-		normals.add(normVectors[18]);
-		normals.add(normVectors[17]);
-	}
-
-	private void addBottomFace(Vector3f offset, List<Vector3f> vertices, 
-			List<Vector2f> textures, List<Vector3f> normals, Vector2f[] textureCoords) {
-		vertices.add(Vector3f.add(vertVectors[20], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[21], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[23], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[23], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[21], offset, new Vector3f(0, 0, 0)));
-		vertices.add(Vector3f.add(vertVectors[22], offset, new Vector3f(0, 0, 0)));
-		
-		textures.add(textureCoords[12]); // 20
-		textures.add(textureCoords[13]); // 21
-		textures.add(textureCoords[15]); // 23
-		textures.add(textureCoords[15]); // 23
-		textures.add(textureCoords[13]); // 21
-		textures.add(textureCoords[14]); // 22
-		
-		normals.add(normVectors[20]);
-		normals.add(normVectors[21]);
-		normals.add(normVectors[23]);
-		normals.add(normVectors[23]);
-		normals.add(normVectors[21]);
-		normals.add(normVectors[22]);
-	}
-*/
 	
 	private void addFaceShine(Block block, List<Integer> shines) {
 		// Shine is set for each vertex to a boolean 0 or 1 value, indicating whether 
