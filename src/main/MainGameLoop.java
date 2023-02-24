@@ -34,7 +34,7 @@ public class MainGameLoop {
 		
 		FontEngine.loadFont(loader);
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
-		List<GUIElement> gui = FontEngine.buildElementsFromString("Building World...", new Vector2f(-0.1f, 0), 3);
+		List<GUIElement> gui = FontEngine.buildElementsFromString("Building World...", new Vector2f(0, 0), 3, true);
 
 		guiRenderer.render(gui);
 		DisplayManager.updateDisplay();
@@ -48,6 +48,11 @@ public class MainGameLoop {
 		List<GUIElement> fps = new ArrayList<>();
 		List<GUIElement> debug = new ArrayList<>();
 		
+		float displayWidth = FontEngine.getDisplayWidth(2);
+		float displayHeight = FontEngine.getDisplayHeight(2);
+		Vector2f fpsPos = new Vector2f(-1 + 2 * displayWidth, 1 - 2 * displayHeight);
+		Vector2f debugPos = new Vector2f(-1 + 2 * displayWidth, 1 - 4 * displayHeight);
+		
 		float lastTick = 0;
 		boolean closeRequested = false;
 		while (!closeRequested) {
@@ -59,7 +64,7 @@ public class MainGameLoop {
 			time += delta;
 			frames += 1;
 			if (time >= 1000) {
-				fps = FontEngine.buildElementsFromString(frames+" FPS", new Vector2f(-0.98f, 0.96f), 2);
+				fps = FontEngine.buildElementsFromString(frames+" FPS", fpsPos, 2, false);
 				frames = 0;
 				time = 0;
 			}
@@ -74,7 +79,7 @@ public class MainGameLoop {
 			
 			Vector3f camPos = camera.getPosition();
 			light.setPosition(camPos);
-			debug = FontEngine.buildElementsFromString(FontEngine.formatVectorForDisplay(camPos), new Vector2f(-0.98f, 0.92f), 2);
+			debug = FontEngine.buildElementsFromString(FontEngine.formatVectorForDisplay(camPos), debugPos, 2, false);
 			
 			Chunk updated = null;
 			if (action == Camera.LEFT_CLICK) {

@@ -91,15 +91,18 @@ public class FontEngine {
 		}};
 	}
 	
-	public static List<GUIElement> buildElementsFromString(String text, Vector2f position, float scale) {
+	public static List<GUIElement> buildElementsFromString(String text, Vector2f position, float scale, boolean center) {
 		List<GUIElement> letters = new ArrayList<>();
 		Vector2f fontSize = getFontSize(scale);
+		
+		if (center) {
+			Vector2f.add(position, new Vector2f(-getDisplayWidth(text.length(), scale) / 2, 0), position);
+		}
 		
 		float i = 0;
 		for (char c : text.toCharArray()) {
 			Vector2f offset = new Vector2f(i, 0);	
 			
-			System.out.println(c);
 			if (c != ' ') {				
 				GUIElement character = new GUIElement(
 						textures.get(c),
@@ -124,6 +127,14 @@ public class FontEngine {
 	public static float getDisplayWidth(int length, float scale) {
 		float charWidth = scale * 9f / width;
 		return charWidth * length;
+	}
+	
+	public static float getDisplayWidth(float scale) {
+		return scale * 9f / width;
+	}
+	
+	public static float getDisplayHeight(float scale) {
+		return scale * 15f / width;
 	}
 	
 	private static final DecimalFormat positionFormatter = new DecimalFormat("#.##");
