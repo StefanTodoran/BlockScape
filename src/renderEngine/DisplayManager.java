@@ -16,6 +16,7 @@ public class DisplayManager {
 	public static final int HEIGHT = 720;
 	private static final int FPS_CAP = 120;
 	
+	private static boolean fullScreen = false;
 	private static long lastFrameTime;
 	private static long delta;
 
@@ -25,10 +26,24 @@ public class DisplayManager {
 		.withProfileCore(true);
 		
 		try {
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+//			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+
+			DisplayMode displayMode = null;
+	        DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+	         for (int i = 0; i < modes.length; i++)
+	         {
+	             if (modes[i].getWidth() == WIDTH
+	             && modes[i].getHeight() == HEIGHT
+	             && modes[i].isFullscreenCapable())
+	               {
+	                    displayMode = modes[i];
+	               }
+	         }
+	         Display.setDisplayMode(displayMode);
+			
 			Display.create(new PixelFormat(), attribs);
 			Display.setTitle("Escape the Down Under");
-//			Display.setFullscreen(true);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
@@ -48,17 +63,9 @@ public class DisplayManager {
 		
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
-				
 				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 					return true; // True, close is requested.
 				}
-				
-//				if (Keyboard.isKeyDown(Keyboard.KEY_E) && Mouse.isGrabbed()) {
-//					Mouse.setGrabbed(false);
-//				} else if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Mouse.isGrabbed()) {
-//					Mouse.setGrabbed(true);
-//				}
-				
 			}
 		}
 		return false;
@@ -70,5 +77,14 @@ public class DisplayManager {
 	
 	public static void closeDisplay() {
 		Display.destroy();
+	}
+	
+	public static void toggleFullscreen() {
+		fullScreen = !fullScreen;
+		try {
+			Display.setFullscreen(fullScreen);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
 	}
 }

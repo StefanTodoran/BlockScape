@@ -1,4 +1,4 @@
-package textures;
+package models;
 
 public class ModelTexture {
 

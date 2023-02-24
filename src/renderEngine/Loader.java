@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -25,17 +24,7 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
-		int vaoID = createVAO();
-		storeDataInAttributeList(0, 3, positions);
-		storeDataInAttributeList(1, 2, textureCoords);
-		storeDataInAttributeList(2, 3, normals);
-		storeDataInAttributeList(3, 1, shineVals);
-		unbindVAO();
-		return new RawModel(vaoID, positions.length / 3);
-	}
-	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+	public RawModel loadModelToVAO(float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
@@ -44,27 +33,24 @@ public class Loader {
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
-//		return new RawModel(vaoID, positions.length / 3);
 	}
 	
-	public RawModel loadToVAO(float[] screenCoords) {
+	public RawModel loadFlatToVAO(float[] screenCoords) {
 		int vaoID = createVAO();
 		storeDataInAttributeList(0, 2, screenCoords);
 		unbindVAO();
 		return new RawModel(vaoID, screenCoords.length / 2);
 	}
 	
-	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals) {
-		GL30.glBindVertexArray(vaoID);
-		storeDataInAttributeList(0, 3, positions);
-		storeDataInAttributeList(1, 2, textureCoords);
-		storeDataInAttributeList(2, 3, normals);
-		storeDataInAttributeList(3, 1, shineVals);
+	public RawModel loadFlatToVAO(float[] screenCoords, float[] textureCoords) {
+		int vaoID = createVAO();
+		storeDataInAttributeList(0, 2, screenCoords);
+		storeDataInAttributeList(0, 2, textureCoords);
 		unbindVAO();
-		return new RawModel(vaoID, positions.length / 3);
+		return new RawModel(vaoID, screenCoords.length / 2);
 	}
 	
-	public RawModel updateVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
+	public RawModel updateModelVAO(int vaoID, float[] positions, float[] textureCoords, float[] normals, float[] shineVals, int[] indices) {
 		GL30.glBindVertexArray(vaoID);
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
@@ -73,7 +59,13 @@ public class Loader {
 		storeDataInAttributeList(3, 1, shineVals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
-//		return new RawModel(vaoID, positions.length / 3);
+	}
+	
+	public RawModel updateFlatVAO(int vaoID, float[] screenCoords) {
+		GL30.glBindVertexArray(vaoID);
+		storeDataInAttributeList(0, 2, screenCoords);
+		unbindVAO();
+		return new RawModel(vaoID, screenCoords.length / 2);
 	}
 	
 	public int loadTexture(String fileName) {

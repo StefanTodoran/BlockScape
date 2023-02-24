@@ -51,6 +51,5 @@ void main(void) {
 	}
 	
 	outColor = mix(vec4(skyColor, 1.0), outColor, fogFadeAmnt);
-	// outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), outColor, fogFadeAmnt);
 	
 }

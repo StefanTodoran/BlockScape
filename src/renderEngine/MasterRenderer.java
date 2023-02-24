@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-
 import models.TexturedModel;
 import shaders.StaticShader;
 import world.Camera;
@@ -18,6 +16,7 @@ public class MasterRenderer {
 
 	private StaticShader shader = new StaticShader();
 	private Renderer renderer = new Renderer(shader);
+//	private GUIRenderer guiRenderer;
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<TexturedModel, List<Chunk>> chunks = new HashMap<TexturedModel, List<Chunk>>();
@@ -31,11 +30,6 @@ public class MasterRenderer {
 		renderer.renderChunks(chunks);
 		shader.stop();
 		chunks.clear();
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
-		renderer.renderReticle();
-		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	public void processEntity(Entity entity) {

@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import models.RawModel;
-import models.Reticle;
 import models.TexturedModel;
 import shaders.StaticShader;
 import toolbox.Maths;
@@ -53,34 +52,22 @@ public class Renderer {
 			for (Chunk chunk : batch) {
 				prepareInstance(chunk);
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-//				GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getRawModel().getVertexCount());
 			}
 			unbindTexturedModel();
 		}
 	}
 
-//	public void renderEntities(Map<TexturedModel, List<Entity>> entities) {
-//		for (TexturedModel model : entities.keySet()) {
-//			prepareTexturedModel(model);
-//			List<Entity> batch = entities.get(model);
-//			
-//			for (Entity entity : batch) {
-//				prepareInstance(entity);
-//				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-//			}
-//			unbindTexturedModel();
-//		}
-//	}
-	
-	public void renderReticle() {
-		RawModel model = Reticle.getModel();
-		GL30.glBindVertexArray(model.getVaoID());
-		GL20.glEnableVertexAttribArray(0);
-		
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getVertexCount());
-		
-		GL20.glDisableVertexAttribArray(0);
-		GL30.glBindVertexArray(0);
+	public void renderEntities(Map<TexturedModel, List<Entity>> entities) {
+		for (TexturedModel model : entities.keySet()) {
+			prepareTexturedModel(model);
+			List<Entity> batch = entities.get(model);
+			
+			for (Entity entity : batch) {
+				prepareInstance(entity);
+				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+			}
+			unbindTexturedModel();
+		}
 	}
 	
 	private void prepareTexturedModel(TexturedModel tModel) {

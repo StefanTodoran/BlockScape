@@ -7,10 +7,10 @@ import java.util.Map;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import models.ModelTexture;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.Loader;
-import textures.ModelTexture;
 
 public class Chunk {
 
@@ -218,10 +218,10 @@ public class Chunk {
 		
 		RawModel rModel;
 		if (this.tModel == null) {
-			rModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);			
+			rModel = loader.loadModelToVAO(verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);			
 		} else {
 			int vaoID = tModel.getRawModel().getVaoID();
-			rModel = loader.updateVAO(vaoID, verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);
+			rModel = loader.updateModelVAO(vaoID, verticesArray, texturesArray, normalsArray, shinesArray, indicesArray);
 		}
 		
 		if (TEXTURE == null) {
