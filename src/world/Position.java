@@ -65,8 +65,8 @@ public final class Position {
     @Override
 	public int hashCode() {
     	// TODO: Determine the best hash code function for performance.
-    	// return (x << 10 ^ y << 5 ^ z);
-		return Objects.hash(x, y, z);
+    	return (x << 10 ^ y << 5 ^ z);
+//		return Objects.hash(x, y, z);
 	}
 
     @Override

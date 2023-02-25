@@ -18,9 +18,11 @@ public class Chunk {
 	public static final int SIZE = 16;
 	private static ModelTexture TEXTURE;
 	
-	// String of the form "x,y,z" specified as integers.
 	private Map<Position, Block> blocks;
 	private boolean[][][] occupied;
+	
+	private int[][][] blockType;
+	private Map<Position, List<Integer>> blockData;	
 	
 	private TexturedModel tModel;
 

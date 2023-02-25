@@ -10,7 +10,7 @@ import toolbox.PerlinNoiseGenerator;
 public class World {
 
 	private Map<Position, Chunk> chunks;
-	private int renderDistance = 8;
+	private int renderDistance = 12;
 
 	private PerlinNoiseGenerator rng;
 	private Random random;

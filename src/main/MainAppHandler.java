@@ -9,7 +9,6 @@ import renderEngine.DisplayManager;
 import renderEngine.FontEngine;
 import renderEngine.GUIRenderer;
 import renderEngine.Loader;
-import renderEngine.MasterRenderer;
 import userInterface.MainMenu;
 
 public class MainAppHandler {
