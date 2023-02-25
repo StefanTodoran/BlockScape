@@ -10,7 +10,7 @@ import toolbox.PerlinNoiseGenerator;
 public class World {
 
 	private Map<Position, Chunk> chunks;
-	private int renderDistance = 12;
+	private int renderDistance = 8;
 
 	private PerlinNoiseGenerator rng;
 	private Random random;
@@ -60,7 +60,6 @@ public class World {
 				}
 				
 				int trees = (int) (rng.noise(cx, cy, cz) * 5) + 3;
-				System.out.println(trees);
 				for (int i = 0; i < trees; i++) {
 					int x = (int) (random.nextFloat() * Chunk.SIZE);
 					int z = (int) (random.nextFloat() * Chunk.SIZE);
@@ -81,7 +80,7 @@ public class World {
 							int leavesWidth = (dy > trunkHeight - 2 || dy < 2) ? 1 : 2;
 							for (int dx = -leavesWidth; dx <= leavesWidth; dx++) {
 								for (int dz = -leavesWidth; dz <= leavesWidth; dz++) {
-									if (dx != 0 || dz != 0)			
+									if (dx != 0 || dz != 0 || dy > trunkHeight - 3)			
 										blocks.put(new Position(x+dx, height+dy+2, z+dz), new Block("oak_leaves"));
 								}
 							}

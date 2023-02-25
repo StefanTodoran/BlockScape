@@ -16,7 +16,6 @@ public class MasterRenderer {
 
 	private StaticShader shader = new StaticShader();
 	private Renderer renderer = new Renderer(shader);
-//	private GUIRenderer guiRenderer;
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<TexturedModel, List<Chunk>> chunks = new HashMap<TexturedModel, List<Chunk>>();

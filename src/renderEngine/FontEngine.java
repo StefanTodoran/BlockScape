@@ -88,15 +88,18 @@ public class FontEngine {
 			put('?', loader.loadTexture("font/question"));
 			put('/', loader.loadTexture("font/slash"));
 			put('-', loader.loadTexture("font/dash"));
+			put('<', loader.loadTexture("font/larrow"));
+			put('>', loader.loadTexture("font/rarrow"));
 		}};
 	}
 	
-	public static List<GUIElement> buildElementsFromString(String text, Vector2f position, float scale, boolean center) {
+	public static List<GUIElement> guiFromString(String text, Vector2f position, float scale, boolean center) {
 		List<GUIElement> letters = new ArrayList<>();
 		Vector2f fontSize = getFontSize(scale);
 		
+		Vector2f truePosition = new Vector2f(position);
 		if (center) {
-			Vector2f.add(position, new Vector2f(-getDisplayWidth(text.length(), scale) / 2, 0), position);
+			Vector2f.add(position, new Vector2f(-getDisplayWidth(text.length(), scale) / 2, 0), truePosition);
 		}
 		
 		float i = 0;
@@ -106,7 +109,7 @@ public class FontEngine {
 			if (c != ' ') {				
 				GUIElement character = new GUIElement(
 						textures.get(c),
-						Vector2f.add(position, offset, offset),
+						Vector2f.add(truePosition, offset, offset),
 						fontSize
 						);
 				letters.add(character);

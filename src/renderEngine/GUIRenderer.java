@@ -66,6 +66,11 @@ public class GUIRenderer {
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
+	public void clearScreen() {
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glClearColor(0, 0, 0, 1);
+	}
+	
 	public void cleanUp() {
 		shader.cleanUp();
 	}

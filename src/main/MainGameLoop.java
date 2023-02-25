@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -23,25 +25,26 @@ import world.World;
 
 public class MainGameLoop {
 
-	public static void main(String[] args) {
-		DisplayManager.createDisplay();
-		
-		Loader loader = new Loader();
+	// Expects display to be created already.
+	public static void runGame(Loader loader, GUIRenderer guiRenderer) {
 		MasterRenderer renderer = new MasterRenderer();
 		
-		Reticle reticle = new Reticle();
-		reticle.loadReticle(loader);
+		// ----------- \\
+		// WORLD SETUP \\
 		
-		FontEngine.loadFont(loader);
-		GUIRenderer guiRenderer = new GUIRenderer(loader);
-		List<GUIElement> gui = FontEngine.buildElementsFromString("Building World...", new Vector2f(0, 0), 3, true);
-
+		List<GUIElement> gui = FontEngine.guiFromString("Building World...", new Vector2f(0, 0), 3, true);
+		guiRenderer.clearScreen();
 		guiRenderer.render(gui);
 		DisplayManager.updateDisplay();
 		
 		World world = new World(loader, 123456789L);
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 		Camera camera = new Camera(new Vector3f(0, 20, 0), new Vector3f(0, 0, 0));
+		Reticle reticle = new Reticle();
+		reticle.loadReticle(loader);
+		
+		// -------------- \\
+		// MAIN GAME LOOP \\
 		
 		int frames = 0;
 		float time = 0;
@@ -53,31 +56,23 @@ public class MainGameLoop {
 		Vector2f fpsPos = new Vector2f(-1 + 2 * displayWidth, 1 - 2 * displayHeight);
 		Vector2f debugPos = new Vector2f(-1 + 2 * displayWidth, 1 - 4 * displayHeight);
 		
+		Mouse.setGrabbed(true);
 		float lastTick = 0;
 		boolean closeRequested = false;
-		while (!closeRequested) {
-			
+		while (!closeRequested && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			// GAME LOGIC
 			float delta = DisplayManager.getFrameTimeMS();
 			lastTick += delta;
 			
 			time += delta;
 			frames += 1;
-			if (frames >= 5) {
+			if (frames >= 3) {
 				int estimate = (int) (1000 / time) * frames;
 				
-				fps = FontEngine.buildElementsFromString(estimate+" FPS", fpsPos, 2, false);
+				fps = FontEngine.guiFromString(estimate+" FPS", fpsPos, 2, false);
 				frames = 0;
 				time = 0;
 			}
-			
-//			time += delta;
-//			frames += 1;
-//			if (time >= 1000) {
-//				fps = FontEngine.buildElementsFromString(frames+" FPS", fpsPos, 2, false);
-//				frames = 0;
-//				time = 0;
-//			}
 						
 			int action = Camera.NO_ACTION;
 			while (lastTick > 100) {
@@ -89,7 +84,7 @@ public class MainGameLoop {
 			
 			Vector3f camPos = camera.getPosition();
 			light.setPosition(camPos);
-			debug = FontEngine.buildElementsFromString(FontEngine.formatVectorForDisplay(camPos), debugPos, 2, false);
+			debug = FontEngine.guiFromString(FontEngine.formatVectorForDisplay(camPos), debugPos, 2, false);
 			
 			Chunk updated = null;
 			if (action == Camera.LEFT_CLICK) {
@@ -115,15 +110,14 @@ public class MainGameLoop {
 			guiRenderer.render(gui);
 			guiRenderer.renderReticle();
 			
-			// isCloseRequested handles the X button
-			// updateDisplay checks for escape keypress
-			closeRequested = DisplayManager.updateDisplay() || Display.isCloseRequested();
+			DisplayManager.updateDisplay();
+			closeRequested = Display.isCloseRequested();
 		}
-		
-		guiRenderer.cleanUp();
-		renderer.cleanUp();
-		loader.cleanUp();
-		DisplayManager.closeDisplay();
+		if (closeRequested) {
+			renderer.cleanUp();
+			MainAppHandler.cleanUp();
+		}
+		Mouse.setGrabbed(false);
 	}
 
 }

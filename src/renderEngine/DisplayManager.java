@@ -50,25 +50,15 @@ public class DisplayManager {
 		
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
 		lastFrameTime = Sys.getTime();
-		Mouse.setGrabbed(true);
 	}
 	
-	public static boolean updateDisplay() {
+	public static void updateDisplay() {
 		Display.sync(FPS_CAP);
 		Display.update();
 		
 		long currentTime = Sys.getTime();
 		delta = currentTime - lastFrameTime;
 		lastFrameTime = currentTime;
-		
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-					return true; // True, close is requested.
-				}
-			}
-		}
-		return false;
 	}
 	
 	public static float getFrameTimeMS() {
