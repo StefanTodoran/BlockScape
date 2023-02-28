@@ -6,7 +6,7 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
-import main.MainAppHandler;
+import main.Main;
 import models.GUIElement;
 import renderEngine.DisplayManager;
 import renderEngine.FontEngine;
@@ -16,26 +16,33 @@ public class MainMenu {
 	private static List<GUIElement> staticAssets;
 	private static List<Button> buttons;
 	
+	private static boolean canResume = false;
+	private static Button resumeButton;
+	
 	public static void constructMainMenu() {
 		staticAssets = new ArrayList<>();
 		buttons = new ArrayList<>();
 		
 		// MENU BACKGROUND
-		staticAssets.add(new GUIElement(MainAppHandler.loader.loadTexture("background"), new Vector2f(0, 0), new Vector2f(1, 1)));
+		staticAssets.add(new GUIElement(Main.loader.loadTexture("background"), new Vector2f(0, 0), new Vector2f(1, 1)));
 
 		float gap = 2*FontEngine.getDisplayHeight(5);
 		staticAssets.addAll(FontEngine.guiFromString("Escape The Down Under", new Vector2f(0, 0.75f), 5, true));
 		staticAssets.addAll(FontEngine.guiFromString("Main Menu", new Vector2f(0, 0.75f - gap), 3, true));
 	
+		resumeButton = new Button("Resume World", new Vector2f(0, 0 + 2*gap), RESUME_GAME);
 		buttons.add(new Button("Create New World", new Vector2f(0, 0 + gap), NEW_WORLD));
-		buttons.add(new Button("Modify Settings", new Vector2f(0, 0), SETTINGS));
-		buttons.add(new Button("Save and Quit", new Vector2f(0, 0 - gap), SAVE_QUIT));
+		buttons.add(new Button("Load Saved World", new Vector2f(0, 0), LOAD_WORLD));
+		buttons.add(new Button("Modify Settings", new Vector2f(0, 0 - gap), SETTINGS));
+		buttons.add(new Button("Save and Quit", new Vector2f(0, 0 - 2*gap), SAVE_QUIT));
 	}
 	
 	public static final int NO_ACTION = -1;
 	public static final int NEW_WORLD = 1;
-	public static final int SETTINGS = 2;
-	public static final int SAVE_QUIT = 3;
+	public static final int LOAD_WORLD = 2;
+	public static final int SETTINGS = 3;
+	public static final int SAVE_QUIT = 4;
+	public static final int RESUME_GAME = 5;
 	
 	private static boolean mouseWasDown = false;
 	private static boolean clicked = false;
@@ -63,6 +70,14 @@ public class MainMenu {
 			}
 		}
 		
+		if (canResume) {			
+			boolean hovered = resumeButton.checkBounds(mouseX, mouseY);
+			
+			if (clicked && hovered) {
+				action = resumeButton.getAction();
+			}
+		}
+		
 		return action;
 	}
 	
@@ -74,6 +89,15 @@ public class MainMenu {
 			gui.addAll(button.getGUI());
 		}
 		
+		if (canResume) {
+			gui.addAll(resumeButton.getGUI());
+		}
+		
 		return gui;
 	}
+
+	public static void canResume(boolean canResume) {
+		MainMenu.canResume = canResume;
+	}
+	
 }

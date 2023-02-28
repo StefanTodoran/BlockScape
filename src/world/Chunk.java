@@ -21,8 +21,8 @@ public class Chunk {
 	private Map<Position, Block> blocks;
 	private boolean[][][] occupied;
 	
-	private int[][][] blockType;
-	private Map<Position, List<Integer>> blockData;	
+//	private int[][][] blockType;
+//	private Map<Position, List<Integer>> blockData;
 	
 	private TexturedModel tModel;
 

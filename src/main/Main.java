@@ -17,34 +17,101 @@ import renderEngine.FontEngine;
 import renderEngine.GUIRenderer;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
+import toolbox.ChunkDataHandler;
+import userInterface.MainMenu;
 import world.Camera;
 import world.Chunk;
 import world.Light;
 import world.Position;
 import world.World;
 
-public class MainGameLoop {
+public class Main {
+	
+	public static Loader loader;
+	public static GUIRenderer guiRenderer;
+	
+	public static void main(String[] args) {
+		DisplayManager.createDisplay();
+		loader = new Loader();
+		FontEngine.loadFont(loader);
+		guiRenderer = new GUIRenderer(loader);
+		
+		MainMenu.constructMainMenu();
+		List<GUIElement> gui;
 
-	// Expects display to be created already.
-	public static void runGame(Loader loader, GUIRenderer guiRenderer) {
-		MasterRenderer renderer = new MasterRenderer();
+		int action = MainMenu.NO_ACTION;
+		boolean closeRequested = false;
+		World world = null;
 		
-		// ----------- \\
-		// WORLD SETUP \\
+		while (!closeRequested) {
+			action = MainMenu.doUpdate();
+			gui = MainMenu.getAssetsForRender();
 		
+			if (action == MainMenu.RESUME_GAME) {
+				runGame(loader, guiRenderer, world);
+			}
+			if (action == MainMenu.NEW_WORLD) {
+				world = createNewWorld();
+				MainMenu.canResume(true);
+				runGame(loader, guiRenderer, world);
+			}
+			if (action == MainMenu.LOAD_WORLD) {
+				world = loadSavedWorld();
+				MainMenu.canResume(true);
+				runGame(loader, guiRenderer, world);
+			}
+			if (action == MainMenu.SETTINGS) {
+				// OPEN SETTINGS MENU
+			}
+			if (action == MainMenu.SAVE_QUIT) {
+				ChunkDataHandler.saveWorldData(world);
+				cleanUp();
+			}
+			
+			guiRenderer.clearScreen();
+			guiRenderer.render(gui);
+			DisplayManager.updateDisplay();
+			closeRequested = Display.isCloseRequested();
+		}
+		if (closeRequested) {
+			cleanUp();
+		}
+	}
+	
+	private static World createNewWorld() {		
 		List<GUIElement> gui = FontEngine.guiFromString("Building World...", new Vector2f(0, 0), 3, true);
 		guiRenderer.clearScreen();
 		guiRenderer.render(gui);
 		DisplayManager.updateDisplay();
 		
-		World world = new World(loader, 123456789L);
+		return new World(loader, 123456789L);
+	}
+	
+	private static World loadSavedWorld() {
+		List<GUIElement> gui = FontEngine.guiFromString("Loading World...", new Vector2f(0, 0), 3, true);
+		guiRenderer.clearScreen();
+		guiRenderer.render(gui);
+		DisplayManager.updateDisplay();
+		
+		return new World(loader);
+	}
+	
+	public static void cleanUp() {
+		DisplayManager.closeDisplay();
+		loader.cleanUp();
+		guiRenderer.cleanUp();
+		System.exit(0);
+	}
+
+	// Expects display to be created already.
+	public static void runGame(Loader loader, GUIRenderer guiRenderer, World world) {
+		MasterRenderer renderer = new MasterRenderer();
+		List<GUIElement> gui = new ArrayList<>();
+		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-		Camera camera = new Camera(new Vector3f(0, 20, 0), new Vector3f(0, 0, 0));
+		Camera camera = new Camera(new Vector3f(0, 30, 0), new Vector3f(0, 0, 0));
 		Reticle reticle = new Reticle();
 		reticle.loadReticle(loader);
-		
-		// -------------- \\
-		// MAIN GAME LOOP \\
 		
 		int frames = 0;
 		float time = 0;
@@ -115,7 +182,7 @@ public class MainGameLoop {
 		}
 		if (closeRequested) {
 			renderer.cleanUp();
-			MainAppHandler.cleanUp();
+			cleanUp();
 		}
 		Mouse.setGrabbed(false);
 	}

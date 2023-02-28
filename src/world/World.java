@@ -16,8 +16,14 @@ public class World {
 	private Random random;
 	private long seed;
 	
-	private int groundHeight = 24;
+	private int groundHeight = 20;
+	private int heightVariance = 16;
+	private int heightLimit = 32;
 	private int worldSize = 32;
+	
+	public World(Loader loader) {
+		chunks = new HashMap<Position, Chunk>();
+	}
 	
 	public World(Loader loader, long seed) {
 		chunks = new HashMap<Position, Chunk>();
@@ -28,74 +34,79 @@ public class World {
 		for (int cx = 0; cx < worldSize; cx++) {
 			for (int cy = 0; cy < 3; cy++) {
 				for (int cz = 0; cz < worldSize; cz++) {						
-				Map<Position, Block> blocks = new HashMap<Position, Block>();
-				Position chunkPos = new Position(cx - (worldSize / 2), cy, cz - (worldSize / 2));
-				
-				for (int x = 0; x < Chunk.SIZE; x++) {
-					for (int z = 0; z < Chunk.SIZE; z++) {
-						double fy = rng.noise(cx*Chunk.SIZE + x, cz*Chunk.SIZE + z) * Chunk.SIZE + groundHeight;
-						int y = Math.max(0, Math.min(48, (int) fy));
-
-						int chunkBottom = cy * Chunk.SIZE;
-						int height = y - chunkBottom;
-						
-						if (height < Chunk.SIZE && height >= 0) {
-							blocks.put(new Position(x, height, z), new Block("grass_block"));
-							
-							int soilAmnt = (int) (rng.noise(cx*Chunk.SIZE + x, cz*Chunk.SIZE + z) * 5 + 2);
-							for (int dy = height - 1; dy >= 0; dy--) {
-								if (dy > height - soilAmnt) {									
-									blocks.put(new Position(x, dy, z), new Block("soil_block"));
-								} else {									
-									blocks.put(new Position(x, dy, z), new Block("stone_block"));
-								}
-							}
-						} else if (height >= Chunk.SIZE) {
-							
-							for (int dy = 0; dy < Chunk.SIZE; dy++) {								
-								blocks.put(new Position(x, dy, z), new Block("stone_block"));
-							}
-						}
-					}
-				}
-				
-				int trees = (int) (rng.noise(cx, cy, cz) * 5) + 3;
-				for (int i = 0; i < trees; i++) {
-					int x = (int) (random.nextFloat() * Chunk.SIZE);
-					int z = (int) (random.nextFloat() * Chunk.SIZE);
+					Position chunkPos = new Position(cx - (worldSize / 2), cy, cz - (worldSize / 2));
+					Map<Position, Block> blocks = new HashMap<Position, Block>();
+					generateChunkTerrain(blocks, chunkPos);
 					
-					double fy = rng.noise(cx*Chunk.SIZE + x, cz*Chunk.SIZE + z) * Chunk.SIZE + groundHeight;
-					int y = Math.max(0, Math.min(48, (int) fy));
-
-					int chunkBottom = cy * Chunk.SIZE;
-					int height = y - chunkBottom;
-					
-					if (height < Chunk.SIZE && height >= 0) {
-						blocks.put(new Position(x, height, z), new Block("soil_block"));
-						
-						int trunkHeight = 6 + (int) (rng.noise(cx, cy, cz) * 2);
-						for (int dy = 1; dy < trunkHeight; dy++) {							
-							blocks.put(new Position(x, height+dy, z), new Block("oak_log"));
-							
-							int leavesWidth = (dy > trunkHeight - 2 || dy < 2) ? 1 : 2;
-							for (int dx = -leavesWidth; dx <= leavesWidth; dx++) {
-								for (int dz = -leavesWidth; dz <= leavesWidth; dz++) {
-									if (dx != 0 || dz != 0 || dy > trunkHeight - 3)			
-										blocks.put(new Position(x+dx, height+dy+2, z+dz), new Block("oak_leaves"));
-								}
-							}
-						}
-					}
-				}
-
-				
-				Chunk chunk = new Chunk(new HashMap<Position, Block>(), chunkPos.toVector());
-				chunk.setAllBlocks(blocks);
-				chunks.put(chunkPos, chunk);
-				chunk.updateMesh(loader);
+					Chunk chunk = new Chunk(new HashMap<Position, Block>(), chunkPos.toVector());
+					chunk.setAllBlocks(blocks);
+					chunks.put(chunkPos, chunk);
+					chunk.updateMesh(loader);
 				}
 			}
 		}
+	}
+	
+	public void generateChunkTerrain(Map<Position, Block> blocks, Position cp) {
+		for (int x = 0; x < Chunk.SIZE; x++) {
+			for (int z = 0; z < Chunk.SIZE; z++) {
+				int height = sampleHeight(cp.x*Chunk.SIZE + x, cp.z*Chunk.SIZE + z);
+
+				int chunkBottom = cp.y * Chunk.SIZE;
+				int y = height - chunkBottom;
+				
+				if (y < Chunk.SIZE && y >= 0) {
+					blocks.put(new Position(x, y, z), new Block("grass_block"));
+					
+					int soilAmnt = (int) (random.nextFloat() * 3);
+					for (int dy = y - 1; dy >= 0; dy--) {
+						if (dy > y - soilAmnt) {									
+							blocks.put(new Position(x, dy, z), new Block("soil_block"));
+						} else {									
+							blocks.put(new Position(x, dy, z), new Block("stone_block"));
+						}
+					}
+				} else if (y >= Chunk.SIZE) {
+					// Fully underground. Do underground generation.
+					
+					for (int dy = 0; dy < Chunk.SIZE; dy++) {								
+						blocks.put(new Position(x, dy, z), new Block("stone_block"));
+					}
+				}
+			}
+		}
+		
+		int trees = (int) (rng.noise(cp.x, cp.y, cp.z) * 5) + 1;
+		for (int i = 0; i < trees; i++) {
+			int x = (int) (random.nextFloat() * Chunk.SIZE);
+			int z = (int) (random.nextFloat() * Chunk.SIZE);
+			
+			int height = sampleHeight(cp.x*Chunk.SIZE + x, cp.z*Chunk.SIZE + z);
+			int chunkBottom = cp.y * Chunk.SIZE;
+			int y = height - chunkBottom;
+			
+			if (y < Chunk.SIZE && y >= 0) {
+				blocks.put(new Position(x, y, z), new Block("soil_block"));
+				
+				int trunkHeight = 4 + (int) (random.nextFloat() * 3);
+				for (int dy = 1; dy < trunkHeight; dy++) {				
+					blocks.put(new Position(x, y+dy, z), new Block("oak_log"));
+					
+					int leavesWidth = (dy > trunkHeight - 2 || dy < 2) ? 1 : 2;
+					for (int dx = -leavesWidth; dx <= leavesWidth; dx++) {
+						for (int dz = -leavesWidth; dz <= leavesWidth; dz++) {
+							if (dx != 0 || dz != 0 || dy > trunkHeight - 3)			
+								blocks.put(new Position(x+dx, y+dy+2, z+dz), new Block("oak_leaves"));
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private int sampleHeight(int x, int z) {
+		double y = rng.noise(x, z) * heightVariance + groundHeight;
+		return Math.max(0, Math.min(heightLimit, (int) y));
 	}
 
 	public Map<Position, Chunk> getChunksAround(Position center) {
@@ -136,5 +147,9 @@ public class World {
 
 	public int getRenderDistance() {
 		return renderDistance;
+	}
+	
+	public long getWorldSeed() {
+		return seed;
 	}
 }

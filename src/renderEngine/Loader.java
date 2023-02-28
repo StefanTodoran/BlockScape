@@ -85,8 +85,9 @@ public class Loader {
 //				float amount = Math.min(4, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 //				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
 //			} else {
-//				System.out.println("(!) Anisotropic Filter Not Supported");
+//				System.out.println("(!) Anisotropic filtering not supported");
 //			}
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
