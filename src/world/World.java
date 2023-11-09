@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import renderEngine.Loader;
 import toolbox.PerlinNoiseGenerator;
 
@@ -144,6 +146,11 @@ public class World {
 			return null;
 		}
 	}
+	
+	public Position doRaycast(Vector3f playerPos, Vector3f rayDir, int distLimit) {
+	    // TODO
+	}
+
 
 	public int getRenderDistance() {
 		return renderDistance;

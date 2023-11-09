@@ -102,6 +102,9 @@ public class Main {
 		guiRenderer.cleanUp();
 		System.exit(0);
 	}
+	
+	private static Vector3f playerPosition = new Vector3f(0, 30, 0);
+	private static Vector3f playerRotation = new Vector3f(0, 0, 0);
 
 	// Expects display to be created already.
 	public static void runGame(Loader loader, GUIRenderer guiRenderer, World world) {
@@ -109,7 +112,7 @@ public class Main {
 		List<GUIElement> gui = new ArrayList<>();
 		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-		Camera camera = new Camera(new Vector3f(0, 30, 0), new Vector3f(0, 0, 0));
+		Camera camera = new Camera(playerPosition, playerRotation);
 		Reticle reticle = new Reticle();
 		reticle.loadReticle(loader);
 		
@@ -140,7 +143,9 @@ public class Main {
 				frames = 0;
 				time = 0;
 			}
-						
+					
+			// This code ensures that camera position updates only occur every
+			// 100 ticks, so faster framerates don't result in faster motion.
 			int action = Camera.NO_ACTION;
 			while (lastTick > 100) {
 				lastTick -= 10;
@@ -155,7 +160,10 @@ public class Main {
 			
 			Chunk updated = null;
 			if (action == Camera.LEFT_CLICK) {
-				updated = world.setBlock(new Position(camPos), "gold_block");
+				Vector3f camDir = new Vector3f(camera.getPitch(), camera.getRoll(), camera.getYaw());
+				Position targetPos = world.doRaycast(camPos, camDir, 10);
+				System.out.println(targetPos);
+				updated = world.setBlock(new Position(targetPos), "gold_block");
 			}
 			if (updated != null) {
 				updated.updateMesh(loader);
