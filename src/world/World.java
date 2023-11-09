@@ -147,10 +147,168 @@ public class World {
 		}
 	}
 	
-	public Position doRaycast(Vector3f playerPos, Vector3f rayDir, int distLimit) {
-	    // TODO
+	public Position doRaycast(Vector3f playerPos, float yaw, float pitch, int distLimit) {
+	    double ex = playerPos.x + Math.sin(Math.toRadians(yaw)) * distLimit;
+	    double ey = playerPos.y + Math.cos(Math.toRadians(pitch)) * distLimit;
+	    double ez = playerPos.z + Math.cos(Math.toRadians(yaw)) * distLimit;
+
+	    double dx = ex - playerPos.x;
+	    double dy = ey - playerPos.y;
+	    double dz = playerPos.z - ez;
+	    
+	    double step;
+	    if (Math.abs(dx) >= Math.abs(dz)) {
+	    	step = Math.abs(dx);
+	    } else {
+	    	step = Math.abs(dz);
+	    }
+	    
+	    // Whichever of these is larger will just become 1, since it is divided by itself.
+	    dx = dx / step;
+	    dy = 0;
+	    dz = dz / step;
+	    
+
+	    double fx = playerPos.x;
+	    double fy = playerPos.y;
+	    double fz = playerPos.z;
+
+	    System.out.printf("\nSTART: x:%f, y:%f, z:%f\n", fx, fy, fz);
+	    System.out.printf("DIRECTION: x:%f, y:%f, z:%f\n", dx, dy, dz);
+	    
+	    int x, y, z;
+	    int numSteps = 0;
+	    while (numSteps < distLimit) {
+	    	fx += dx;
+	    	fy += dy;
+	    	fz += dz;
+	    	
+	    	x = (int) fx;
+			y =(int) fy;
+			z = (int) fz;
+	    	
+	    	Position worldPos = new Position(x, y, z);
+			Position chunkPos = Chunk.worldPosToChunkCoords(worldPos);
+			Position internalPos = Chunk.worldPosToLocalCoords(worldPos);
+			
+			System.out.printf("x:%d, y:%d, z:%d\n", x, y, z);
+			Chunk chunk = chunks.get(chunkPos);
+			if (chunk == null) return null; // Our ray has exited the world!
+			if (chunk.getOccupied()[internalPos.x][internalPos.y][internalPos.z]) {
+				return worldPos;
+			}
+			
+			numSteps += 1;
+	    }
+	    
+	    return null;
 	}
 
+	// https://stackoverflow.com/questions/55263298/draw-all-voxels-that-pass-through-a-3d-line-in-3d-voxel-space
+//	public Position doRaycast(Vector3f playerPos, float yaw, float pitch, int distLimit) {
+//	    int startX = (int) playerPos.x;
+//	    int startY = (int) playerPos.y;
+//	    int startZ = (int) playerPos.z;
+//		
+//		int endX = (int) (playerPos.x + Math.sin(Math.toRadians(yaw)) * distLimit);
+//	    int endY = (int) (playerPos.y + Math.cos(Math.toRadians(pitch)) * distLimit);
+//	    int endZ = (int) (playerPos.z + Math.cos(Math.toRadians(yaw)) * distLimit);
+//		
+//		int dx = Math.abs(endX - startX);
+//		int dy = Math.abs(endY - startY);
+//		int dz = Math.abs(endZ - startZ);
+//		
+//		int stepX = startX < endX ? 1 : -1;
+//		int stepY = startY < endY ? 1 : -1;
+//		int stepZ = startZ < endZ ? -1 : 1; // not sure why this one is backwards?
+//		
+//		System.out.printf("dx:%d, dy:%d, dz:%d\n", dx, dy, dz);
+//		System.out.printf("sx:%d, sy:%d, sz:%d\n", stepX, stepY, stepZ);
+//		
+//		double hypotenuse = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2));
+//		
+//		double tMaxX = hypotenuse * 0.5 / dx;
+//		double tMaxY = hypotenuse * 0.5 / dy;
+//		double tMaxZ = hypotenuse * 0.5 / dz;
+//		
+//		double tDeltaX = hypotenuse / dx;
+//		double tDeltaY = hypotenuse / dy;
+//		double tDeltaZ = hypotenuse / dz;
+//		
+//		int numSteps = 0;
+//		while (numSteps < distLimit){
+//		    if (tMaxX < tMaxY) {
+//		        if (tMaxX < tMaxZ) {
+//		            startX = startX + stepX;
+//		            tMaxX = tMaxX + tDeltaX;
+//		        }
+//		        else if (tMaxX > tMaxZ){
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//		        }
+//		        else {
+//		            startX = startX + stepX;
+//		            tMaxX = tMaxX + tDeltaX;
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//		        }
+//		    }
+//		    else if (tMaxX > tMaxY){
+//		        if (tMaxY < tMaxZ) {
+////		            startY = startY + stepY;
+//		            tMaxY = tMaxY + tDeltaY;
+//		        }
+//		        else if (tMaxY > tMaxZ){
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//		        }
+//		        else {
+////		            startY = startY + stepY;
+//		            tMaxY = tMaxY + tDeltaY;
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//
+//		        }
+//		    } 
+//		    else {
+//		        if (tMaxY < tMaxZ) {
+////		            startY = startY + stepY;
+//		            tMaxY = tMaxY + tDeltaY;
+//		            startX = startX + stepX;
+//		            tMaxX = tMaxX + tDeltaX;
+//		        }
+//		        else if (tMaxY > tMaxZ){
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//		        }
+//		        else {
+//		            startX = startX + stepX;
+//		            tMaxX = tMaxX + tDeltaX;
+////		            startY = startY + stepY;
+//		            tMaxY = tMaxY + tDeltaY;
+//		            startZ = startZ + stepZ;
+//		            tMaxZ = tMaxZ + tDeltaZ;
+//
+//		        }
+//		    }
+//		    
+//		    System.out.printf("x:%d, y:%d, z:%d\n", startX, startY, startZ);
+//		    
+//		    Position worldPos = new Position(startX, startY, startZ);
+//			Position chunkPos = Chunk.worldPosToChunkCoords(worldPos);
+//			Position internalPos = Chunk.worldPosToLocalCoords(worldPos);
+//			
+//			Chunk chunk = chunks.get(chunkPos);
+//			if (chunk == null) return null; // Our ray has exited the world!
+//			if (chunk.getOccupied()[internalPos.x][internalPos.y][internalPos.z]) {
+//				return worldPos;
+//			}
+//			
+//			numSteps++;
+//		}
+//
+//		return null;
+//	}
 
 	public int getRenderDistance() {
 		return renderDistance;

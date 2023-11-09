@@ -27,7 +27,7 @@ public class MainMenu {
 		staticAssets.add(new GUIElement(Main.loader.loadTexture("background"), new Vector2f(0, 0), new Vector2f(1, 1)));
 
 		float gap = 2*FontEngine.getDisplayHeight(5);
-		staticAssets.addAll(FontEngine.guiFromString("Escape The Down Under", new Vector2f(0, 0.75f), 5, true));
+		staticAssets.addAll(FontEngine.guiFromString("BlockScape", new Vector2f(0.025f, 0.75f), 5, true));
 		staticAssets.addAll(FontEngine.guiFromString("Main Menu", new Vector2f(0, 0.75f - gap), 3, true));
 	
 		resumeButton = new Button("Resume World", new Vector2f(0, 0 + 2*gap), RESUME_GAME);

@@ -1,7 +1,5 @@
 package world;
 
-import java.util.Objects;
-
 import org.lwjgl.util.vector.Vector3f;
 
 public final class Position {

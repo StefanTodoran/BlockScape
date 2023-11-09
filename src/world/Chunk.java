@@ -375,9 +375,9 @@ public class Chunk {
 	}
 
 	public static Position worldPosToLocalCoords(int x, int y, int z) {
-		int lx = (x >= 0) ? x % SIZE: SIZE + (x % SIZE);
-		int ly = (y >= 0) ? y % SIZE: SIZE + (y % SIZE);
-		int lz = (z >= 0) ? z % SIZE: SIZE + (z % SIZE);
+		int lx = (x >= 0) ? x % SIZE : SIZE + (x % SIZE) - 1;
+		int ly = (y >= 0) ? y % SIZE : SIZE + (y % SIZE) - 1;
+		int lz = (z >= 0) ? z % SIZE : SIZE + (z % SIZE) - 1;
 		return new Position(lx, ly, lz);
 	}
 

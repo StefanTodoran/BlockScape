@@ -103,7 +103,7 @@ public class Main {
 		System.exit(0);
 	}
 	
-	private static Vector3f playerPosition = new Vector3f(0, 30, 0);
+	private static Vector3f playerPosition = new Vector3f(0.5f, 25, 0.5f);
 	private static Vector3f playerRotation = new Vector3f(0, 0, 0);
 
 	// Expects display to be created already.
@@ -160,10 +160,12 @@ public class Main {
 			
 			Chunk updated = null;
 			if (action == Camera.LEFT_CLICK) {
-				Vector3f camDir = new Vector3f(camera.getPitch(), camera.getRoll(), camera.getYaw());
-				Position targetPos = world.doRaycast(camPos, camDir, 10);
+				Position targetPos = world.doRaycast(camPos, camera.getYaw(), camera.getPitch(), 10);
 				System.out.println(targetPos);
-				updated = world.setBlock(new Position(targetPos), "gold_block");
+				
+				if (targetPos != null) {					
+					updated = world.setBlock(new Position(targetPos), "gold_block");
+				}
 			}
 			if (updated != null) {
 				updated.updateMesh(loader);

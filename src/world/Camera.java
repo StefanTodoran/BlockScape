@@ -9,7 +9,8 @@ public class Camera {
 	private Vector3f position = new Vector3f(0, 0, 0);
 	private Vector3f velocity = new Vector3f(0, 0, 0);
 	
-	private float moveSpeed = 0.1f;
+//	private float moveSpeed = 0.1f;
+	private float moveSpeed = 0.015f;
 	private float velFalloff = 0.96f;
 	private float sensitivity = 0.1f;
 
@@ -98,8 +99,10 @@ public class Camera {
 	}
 	
 	private void updateRotation() {
-		pitch += -Mouse.getDY() * sensitivity;
-		yaw += Mouse.getDX() * sensitivity;
+		yaw = (yaw + Mouse.getDX() * sensitivity) % 360;
+		pitch = (pitch - Mouse.getDY() * sensitivity) % 360;
+		pitch = pitch > 90 ? 90 : pitch;
+		pitch = pitch < -90 ? -90 : pitch;
 	}
 	
 	public Vector3f getPosition() {
