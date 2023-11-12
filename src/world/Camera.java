@@ -109,6 +109,14 @@ public class Camera {
 		return position;
 	}
 	
+	public Vector3f getRenderPosition() {
+		return new Vector3f(position.x - 0.5f, position.y - 0.5f, position.z - 0.5f);
+	}
+	
+	public Vector3f getDirection() {
+		return new Vector3f(pitch, yaw, roll);
+	}
+	
 	public float getPitch() {
 		return pitch;
 	}

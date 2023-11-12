@@ -139,7 +139,7 @@ public class World {
 		Chunk chunk = chunks.get(chunkPos);
 		if (chunk != null) {
 			blockPos = Chunk.worldPosToLocalCoords(blockPos);
-			Block block = new Block(blockType);
+			Block block = (blockType != null) ? new Block(blockType) : null;
 			chunk.setBlock(blockPos, block);		
 			return chunk;
 		} else {
@@ -149,24 +149,24 @@ public class World {
 	
 	public Position doRaycast(Vector3f playerPos, float yaw, float pitch, int distLimit) {
 	    double ex = playerPos.x + Math.sin(Math.toRadians(yaw)) * distLimit;
-	    double ey = playerPos.y + Math.cos(Math.toRadians(pitch)) * distLimit;
-	    double ez = playerPos.z + Math.cos(Math.toRadians(yaw)) * distLimit;
+	    double ey = playerPos.y - Math.cos(Math.toRadians(pitch)) * distLimit;
+	    double ez = playerPos.z - Math.cos(Math.toRadians(yaw)) * distLimit;
 
 	    double dx = ex - playerPos.x;
 	    double dy = ey - playerPos.y;
-	    double dz = playerPos.z - ez;
+	    double dz = ez - playerPos.z;
 	    
-	    double step;
+	    double stepXZ;
 	    if (Math.abs(dx) >= Math.abs(dz)) {
-	    	step = Math.abs(dx);
+	    	stepXZ = Math.abs(dx);
 	    } else {
-	    	step = Math.abs(dz);
+	    	stepXZ = Math.abs(dz);
 	    }
 	    
 	    // Whichever of these is larger will just become 1, since it is divided by itself.
-	    dx = dx / step;
+	    dx = dx / stepXZ;
 	    dy = 0;
-	    dz = dz / step;
+	    dz = dz / stepXZ;
 	    
 
 	    double fx = playerPos.x;
@@ -184,7 +184,7 @@ public class World {
 	    	fz += dz;
 	    	
 	    	x = (int) fx;
-			y =(int) fy;
+			y = (int) fy;
 			z = (int) fz;
 	    	
 	    	Position worldPos = new Position(x, y, z);
@@ -194,6 +194,8 @@ public class World {
 			System.out.printf("x:%d, y:%d, z:%d\n", x, y, z);
 			Chunk chunk = chunks.get(chunkPos);
 			if (chunk == null) return null; // Our ray has exited the world!
+
+			assert (chunk.getBlock(chunkPos) != null) == chunk.getOccupied()[internalPos.x][internalPos.y][internalPos.z];
 			if (chunk.getOccupied()[internalPos.x][internalPos.y][internalPos.z]) {
 				return worldPos;
 			}
@@ -212,7 +214,7 @@ public class World {
 //		
 //		int endX = (int) (playerPos.x + Math.sin(Math.toRadians(yaw)) * distLimit);
 //	    int endY = (int) (playerPos.y + Math.cos(Math.toRadians(pitch)) * distLimit);
-//	    int endZ = (int) (playerPos.z + Math.cos(Math.toRadians(yaw)) * distLimit);
+//	    int endZ = (int) (playerPos.z - Math.cos(Math.toRadians(yaw)) * distLimit);
 //		
 //		int dx = Math.abs(endX - startX);
 //		int dy = Math.abs(endY - startY);
@@ -220,7 +222,7 @@ public class World {
 //		
 //		int stepX = startX < endX ? 1 : -1;
 //		int stepY = startY < endY ? 1 : -1;
-//		int stepZ = startZ < endZ ? -1 : 1; // not sure why this one is backwards?
+//		int stepZ = startZ < endZ ? 1 : -1;
 //		
 //		System.out.printf("dx:%d, dy:%d, dz:%d\n", dx, dy, dz);
 //		System.out.printf("sx:%d, sy:%d, sz:%d\n", stepX, stepY, stepZ);
@@ -255,7 +257,7 @@ public class World {
 //		    }
 //		    else if (tMaxX > tMaxY){
 //		        if (tMaxY < tMaxZ) {
-////		            startY = startY + stepY;
+//		            startY = startY + stepY;
 //		            tMaxY = tMaxY + tDeltaY;
 //		        }
 //		        else if (tMaxY > tMaxZ){
@@ -263,7 +265,7 @@ public class World {
 //		            tMaxZ = tMaxZ + tDeltaZ;
 //		        }
 //		        else {
-////		            startY = startY + stepY;
+//		            startY = startY + stepY;
 //		            tMaxY = tMaxY + tDeltaY;
 //		            startZ = startZ + stepZ;
 //		            tMaxZ = tMaxZ + tDeltaZ;
@@ -272,7 +274,7 @@ public class World {
 //		    } 
 //		    else {
 //		        if (tMaxY < tMaxZ) {
-////		            startY = startY + stepY;
+//		            startY = startY + stepY;
 //		            tMaxY = tMaxY + tDeltaY;
 //		            startX = startX + stepX;
 //		            tMaxX = tMaxX + tDeltaX;
@@ -284,7 +286,7 @@ public class World {
 //		        else {
 //		            startX = startX + stepX;
 //		            tMaxX = tMaxX + tDeltaX;
-////		            startY = startY + stepY;
+//		            startY = startY + stepY;
 //		            tMaxY = tMaxY + tDeltaY;
 //		            startZ = startZ + stepZ;
 //		            tMaxZ = tMaxZ + tDeltaZ;

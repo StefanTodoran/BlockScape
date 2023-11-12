@@ -119,12 +119,14 @@ public class Main {
 		int frames = 0;
 		float time = 0;
 		List<GUIElement> fps = new ArrayList<>();
-		List<GUIElement> debug = new ArrayList<>();
+		List<GUIElement> coords = new ArrayList<>();
+		List<GUIElement> dir = new ArrayList<>();
 		
 		float displayWidth = FontEngine.getDisplayWidth(2);
 		float displayHeight = FontEngine.getDisplayHeight(2);
 		Vector2f fpsPos = new Vector2f(-1 + 2 * displayWidth, 1 - 2 * displayHeight);
-		Vector2f debugPos = new Vector2f(-1 + 2 * displayWidth, 1 - 4 * displayHeight);
+		Vector2f coordsPos = new Vector2f(-1 + 2 * displayWidth, 1 - 4 * displayHeight);
+		Vector2f dirPos = new Vector2f(-1 + 2 * displayWidth, 1 - 6 * displayHeight);
 		
 		Mouse.setGrabbed(true);
 		float lastTick = 0;
@@ -154,22 +156,23 @@ public class Main {
 				action = action_ != Camera.NO_ACTION ? action_ : action;
 			}
 			
+			light.setPosition(camera.getRenderPosition());
 			Vector3f camPos = camera.getPosition();
-			light.setPosition(camPos);
-			debug = FontEngine.guiFromString(FontEngine.formatVectorForDisplay(camPos), debugPos, 2, false);
+			coords = FontEngine.guiFromString(FontEngine.formatVectorForDisplay(camPos), coordsPos, 2, false);
+			dir = FontEngine.guiFromString(FontEngine.formatVectorForDisplay(camera.getDirection()), dirPos, 2, false);
 			
 			Chunk updated = null;
-			if (action == Camera.LEFT_CLICK) {
-				Position targetPos = world.doRaycast(camPos, camera.getYaw(), camera.getPitch(), 10);
-				System.out.println(targetPos);
-				
-				if (targetPos != null) {					
-					updated = world.setBlock(new Position(targetPos), "gold_block");
-				}
-			}
-			if (updated != null) {
-				updated.updateMesh(loader);
-			}
+//			if (action == Camera.LEFT_CLICK) {
+//				Position targetPos = world.doRaycast(camPos, camera.getYaw(), camera.getPitch(), 10);
+//				
+//				if (targetPos != null) {
+//					System.out.println(targetPos);
+//					updated = world.setBlock(new Position(targetPos), null);
+//				}
+//			}
+//			if (updated != null) {
+//				updated.updateMesh(loader);
+//			}
 			
 			Map<Position, Chunk> chunks = world.getChunksAround(new Position(camPos));
 			
@@ -182,7 +185,8 @@ public class Main {
 			
 			gui = new ArrayList<>();
 			gui.addAll(fps);
-			gui.addAll(debug);
+			gui.addAll(coords);
+			gui.addAll(dir);
 			
 			guiRenderer.render(gui);
 			guiRenderer.renderReticle();

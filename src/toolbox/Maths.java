@@ -49,7 +49,7 @@ public class Maths {
 		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
 		Matrix4f.rotate((float) Math.toRadians(camera.getRoll()), new Vector3f(0, 0, 1), viewMatrix, viewMatrix);
 		
-		Vector3f position = camera.getPosition();
+		Vector3f position = camera.getRenderPosition();
 		Vector3f negPos = new Vector3f(-position.x, -position.y, -position.z);
 		
 		Matrix4f.translate(negPos, viewMatrix, viewMatrix);

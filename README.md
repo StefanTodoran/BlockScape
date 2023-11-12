@@ -26,6 +26,7 @@ There is no released stable build yet. If you'd like to mess around with the gam
 
 ## To Implement
 
+- Fix the voxel grid and player coordinates not being aligned by 0.5
 - Fix tree generation by writing into next chunk
 - Add chunk saving (write binary data to save file)
 - Use perlin noise to finish infinite terrain generation

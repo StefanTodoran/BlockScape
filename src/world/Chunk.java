@@ -404,8 +404,18 @@ public class Chunk {
 		return blocks;
 	}
 	
+	public Block getBlock(Position pos) {
+		return blocks.get(pos);
+	}
+	
 	public void setBlock(Position pos, Block block) {
-		blocks.put(pos, block);
+		if (block != null) {			
+			blocks.put(pos, block);
+			occupied[pos.x][pos.y][pos.z] = true;
+		} else {
+			blocks.remove(pos);
+			occupied[pos.x][pos.y][pos.z] = false;
+		}
 	}
 	
 	public void setAllBlocks(Map<Position, Block> newBlocks) {
